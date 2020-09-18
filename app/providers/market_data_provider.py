@@ -1,4 +1,5 @@
 import sched
+import logging
 
 import ccxt
 
@@ -17,12 +18,11 @@ class MarketDataProvider:
         self.locator = locator
 
     def start(self):
-        print("Starting scheduler for {}".format(self.delay))
+        logging.info("Running MarketDataProvider every {} seconds".format(self.delay))
         self.scheduler.enter(self.delay, 1, self.provide_market_data)
         self.scheduler.run()
 
     def provide_market_data(self):
-        print("Provide Market Data")
         ts, op, hi, lo, cl, vol = self.binance.fetch_ohlcv(
             self.symbol, self.timeframe, limit=1
         )[0]

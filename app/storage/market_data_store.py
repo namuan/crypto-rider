@@ -1,5 +1,5 @@
 import threading
-
+import logging
 from app.common import b2s, json_from_bytes, uuid_gen
 from app.models import CandleStick
 
@@ -23,7 +23,7 @@ class MarketDataStore(threading.Thread):
                     event["id"] = uuid_gen()
                     CandleStick.insert(event).on_conflict_ignore().execute()
             except Exception as e:
-                print(e)
+                logging.error(e)
 
     def can_handle(self, item):
         return (

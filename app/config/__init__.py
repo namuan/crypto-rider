@@ -1,4 +1,5 @@
 import configparser
+import logging
 
 
 def config(section, key, default_value=None):
@@ -13,3 +14,17 @@ def config(section, key, default_value=None):
 
 def providers_fetch_delay():
     return int(config("PROVIDERS", "FETCH_DELAY_IN_SECS", 60))
+
+
+def init_logger():
+    handlers = [
+        logging.StreamHandler(),
+    ]
+
+    logging.basicConfig(
+        handlers=handlers,
+        format="%(asctime)s - %(filename)s:%(lineno)d - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.INFO,
+    )
+    logging.captureWarnings(capture=True)
