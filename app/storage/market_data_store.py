@@ -22,8 +22,7 @@ class MarketDataStore(Thread, BaseContainer):
             try:
                 if self.can_handle(item):
                     event = json_from_bytes(item.get("data"))
-                    event["id"] = uuid_gen()
-                    CandleStick.insert(event).on_conflict_ignore().execute()
+                    CandleStick.save_from(event)
             except Exception as e:
                 logging.error(e)
 
