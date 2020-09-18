@@ -32,7 +32,9 @@ class MarketDataProvider(BaseContainer):
             logging.info("Running MarketDataProvider once")
             self.provide_market_data()
         else:
-            logging.info("Running MarketDataProvider every {} seconds".format(self.delay))
+            logging.info(
+                "Running MarketDataProvider every {} seconds".format(self.delay)
+            )
             self.scheduler.enter(self.delay, 1, self.provide_market_data)
             self.scheduler.run()
 
