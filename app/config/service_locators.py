@@ -1,6 +1,7 @@
 from app.providers.market_data_provider import MarketDataProvider
 from app.publishers.redis_publisher import RedisPublisher
 
+
 class ServiceLocator:
     services = {}
 

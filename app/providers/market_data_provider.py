@@ -22,7 +22,9 @@ class MarketDataProvider:
 
     def provide_market_data(self):
         print("Provide Market Data")
-        ts, op, hi, lo, cl, vol = self.binance.fetch_ohlcv(self.symbol, self.timeframe, limit=1)[0]
+        ts, op, hi, lo, cl, vol = self.binance.fetch_ohlcv(
+            self.symbol, self.timeframe, limit=1
+        )[0]
         data = dict(
             symbol=self.symbol,
             timeframe=self.timeframe,
@@ -31,7 +33,9 @@ class MarketDataProvider:
             high=hi,
             low=lo,
             close=cl,
-            volume=vol
+            volume=vol,
         )
-        self.locator.s('redis_publisher').publish_data("ohlcv_{}".format(self.timeframe), data)
+        self.locator.s("redis_publisher").publish_data(
+            "ohlcv_{}".format(self.timeframe), data
+        )
         self.scheduler.enter(self.delay, 1, self.provide_market_data)
