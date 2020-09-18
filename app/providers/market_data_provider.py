@@ -1,21 +1,19 @@
-import sched
 import logging
+import sched
 
 import ccxt
 
 from app.config import providers_fetch_delay
+from app.config.basecontainer import BaseContainer
 
 
-class MarketDataProvider:
+class MarketDataProvider(BaseContainer):
     scheduler = sched.scheduler()
     delay = providers_fetch_delay()
     exchange = "binance"
     binance = ccxt.binance()
     symbol = "BTC/USDT"  # TODO: Move to config
     timeframe = "1m"  # TODO: Move to config
-
-    def __init__(self, locator):
-        self.locator = locator
 
     def start(self):
         logging.info("Running MarketDataProvider every {} seconds".format(self.delay))
@@ -36,7 +34,7 @@ class MarketDataProvider:
             close=cl,
             volume=vol,
         )
-        self.locator.o("redis_publisher").publish_data(
+        self.lookup_object("redis_publisher").publish_data(
             self.exchange, "ohlcv-{}".format(self.timeframe), data
         )
         self.scheduler.enter(self.delay, 1, self.provide_market_data)
