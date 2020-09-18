@@ -3,7 +3,12 @@ import sched
 
 import ccxt
 
-from app.config import providers_fetch_delay, provider_markets, provider_exchange, provider_candle_timeframe
+from app.config import (
+    providers_fetch_delay,
+    provider_markets,
+    provider_exchange,
+    provider_candle_timeframe,
+)
 from app.config.basecontainer import BaseContainer
 from app.models import CandleStick
 
