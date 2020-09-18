@@ -8,6 +8,7 @@ from app.config import providers_fetch_delay
 class MarketDataProvider:
     scheduler = sched.scheduler()
     delay = providers_fetch_delay()
+    exchange = "binance"
     binance = ccxt.binance()
     symbol = "BTC/USDT"  # TODO: Move to config
     timeframe = "1m"  # TODO: Move to config
@@ -26,8 +27,8 @@ class MarketDataProvider:
             self.symbol, self.timeframe, limit=1
         )[0]
         data = dict(
+            exchange=self.exchange,
             symbol=self.symbol,
-            timeframe=self.timeframe,
             timestamp=ts,
             open=op,
             high=hi,
@@ -35,7 +36,7 @@ class MarketDataProvider:
             close=cl,
             volume=vol,
         )
-        self.locator.s("redis_publisher").publish_data(
-            "ohlcv_{}".format(self.timeframe), data
+        self.locator.o("redis_publisher").publish_data(
+            self.exchange, "ohlcv-{}".format(self.timeframe), data
         )
         self.scheduler.enter(self.delay, 1, self.provide_market_data)

@@ -11,5 +11,10 @@ def cli():
 @cli.command()
 def data_provider():
     click.echo("Publish Market Data")
-    market_data_provider = locator.s("market_data_provider")
+    # Setup everything waiting for events
+    market_data_store = locator.o("market_data_store")
+    market_data_store.start()
+
+    # Start feeding
+    market_data_provider = locator.o("market_data_provider")
     market_data_provider.start()
