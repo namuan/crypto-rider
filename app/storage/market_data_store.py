@@ -26,5 +26,5 @@ class MarketDataStore(Thread, BaseContainer):
 
     def _can_handle(self, item):
         return (
-                item.get("type") == "message" and b2s(item.get("channel")) in self.channels
+            item.get("type") == "message" and b2s(item.get("channel")) in self.channels
         )

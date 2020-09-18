@@ -28,7 +28,9 @@ class MarketDataProvider(BaseContainer):
 
     def provide_market_data(self):
         for market in self.markets:
-            logging.info("Fetching data for {} in time frame {}".format(market, self.timeframe))
+            logging.info(
+                "Fetching data for {} in time frame {}".format(market, self.timeframe)
+            )
             candle_data = self.exchange.fetch_ohlcv(market, self.timeframe, limit=1)[0]
             data = CandleStick.event(self.exchange_id, market, *candle_data)
             self.lookup_object("redis_publisher").publish_data(

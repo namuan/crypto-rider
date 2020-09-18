@@ -17,12 +17,12 @@ def providers_fetch_delay():
 
 
 def provider_markets():
-    all_markets = config('PROVIDERS', 'MARKETS')
+    all_markets = config("PROVIDERS", "MARKETS")
     return all_markets.split(",")
 
 
 def provider_exchange():
-    return config('PROVIDERS', 'EXCHANGE')
+    return config("PROVIDERS", "EXCHANGE")
 
 
 def init_logger():
