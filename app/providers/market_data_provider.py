@@ -27,10 +27,14 @@ class MarketDataProvider(BaseContainer):
     markets = provider_markets()
     timeframe = provider_candle_timeframe()
 
-    def start(self):
-        logging.info("Running MarketDataProvider every {} seconds".format(self.delay))
-        self.scheduler.enter(self.delay, 1, self.provide_market_data)
-        self.scheduler.run()
+    def start(self, skip_wait):
+        if skip_wait:
+            logging.info("Running MarketDataProvider once")
+            self.provide_market_data()
+        else:
+            logging.info("Running MarketDataProvider every {} seconds".format(self.delay))
+            self.scheduler.enter(self.delay, 1, self.provide_market_data)
+            self.scheduler.run()
 
     def provide_market_data(self):
         for market in self.markets:
