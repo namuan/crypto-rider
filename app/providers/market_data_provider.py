@@ -3,6 +3,7 @@ import sched
 
 import ccxt
 
+from app.common import candle_event_name
 from app.config import (
     providers_fetch_delay,
     provider_markets,
@@ -39,6 +40,6 @@ class MarketDataProvider(BaseContainer):
             candle_data = self.exchange.fetch_ohlcv(market, self.timeframe, limit=1)[0]
             data = CandleStick.event(self.exchange_id, market, *candle_data)
             self.lookup_object("redis_publisher").publish_data(
-                self.exchange_id, "ohlcv-{}".format(self.timeframe), data
+                candle_event_name(self.exchange_id, self.timeframe), data
             )
         self.scheduler.enter(self.delay, 1, self.provide_market_data)

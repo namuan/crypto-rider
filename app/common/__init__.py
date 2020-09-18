@@ -20,3 +20,7 @@ def json_from_bytes(src_bytes):
 
 def uuid_gen():
     return uuid.uuid4()
+
+
+def candle_event_name(exchange_id, timeframe):
+    return "{}-ohlcv-{}".format(exchange_id, timeframe)
