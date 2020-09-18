@@ -11,4 +11,4 @@ class RedisPublisher:
     def publish_data(self, exchange, name, data):
         channel_name = self.channel_name(exchange, name)
         print("Channel: {} - Publishing {}".format(channel_name, data))
-        self.locator.s('redis').publish(channel_name, json.dumps(data))
+        self.locator.s("redis").publish(channel_name, json.dumps(data))

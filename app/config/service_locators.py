@@ -11,14 +11,11 @@ class ServiceLocator:
     services = {}
 
     def __init__(self):
-        self.services = dict(
-            redis=redis.StrictRedis(),
-            database=db
-        )
+        self.services = dict(redis=redis.StrictRedis(), database=db)
         self.objects = dict(
             redis_publisher=RedisPublisher(self),
             market_data_provider=MarketDataProvider(self),
-            market_data_store=MarketDataStore(self)
+            market_data_store=MarketDataStore(self),
         )
 
     def o(self, service):

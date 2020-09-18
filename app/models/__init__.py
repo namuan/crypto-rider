@@ -2,8 +2,8 @@ import os
 
 from peewee import *
 
-home_dir = os.getenv('HOME')
-db = SqliteDatabase(home_dir + '/crypto_rider_candles.db')
+home_dir = os.getenv("HOME")
+db = SqliteDatabase(home_dir + "/crypto_rider_candles.db")
 
 
 class CandleStick(Model):
@@ -19,9 +19,7 @@ class CandleStick(Model):
 
     class Meta:
         database = db
-        indexes = (
-            (('timestamp', 'exchange', 'symbol'), True),
-        )
+        indexes = ((("timestamp", "exchange", "symbol"), True),)
 
 
 CandleStick.create_table()
