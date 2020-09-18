@@ -21,6 +21,10 @@ def provider_markets():
     return all_markets.split(",")
 
 
+def provider_exchange():
+    return config('PROVIDERS', 'EXCHANGE')
+
+
 def init_logger():
     handlers = [
         logging.StreamHandler(),
