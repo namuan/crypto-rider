@@ -25,6 +25,10 @@ def provider_exchange():
     return config("PROVIDERS", "EXCHANGE")
 
 
+def provider_candle_timeframe():
+    return config("PROVIDERS", "CANDLE_TIMEFRAME")
+
+
 def init_logger():
     handlers = [
         logging.StreamHandler(),

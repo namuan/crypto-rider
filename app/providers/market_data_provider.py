@@ -3,7 +3,7 @@ import sched
 
 import ccxt
 
-from app.config import providers_fetch_delay, provider_markets, provider_exchange
+from app.config import providers_fetch_delay, provider_markets, provider_exchange, provider_candle_timeframe
 from app.config.basecontainer import BaseContainer
 from app.models import CandleStick
 
@@ -19,7 +19,7 @@ class MarketDataProvider(BaseContainer):
     exchange_id = provider_exchange()
     exchange = exchange_factory(exchange_id)
     markets = provider_markets()
-    timeframe = "1m"  # TODO: Move to config
+    timeframe = provider_candle_timeframe()
 
     def start(self):
         logging.info("Running MarketDataProvider every {} seconds".format(self.delay))
