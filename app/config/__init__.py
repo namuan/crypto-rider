@@ -4,7 +4,7 @@ import logging
 
 def config(section, key, default_value=None):
     c = configparser.ConfigParser()
-    c.read("crypto.cfg")
+    c.read("env.cfg")
 
     if not c.has_section(section):
         return default_value

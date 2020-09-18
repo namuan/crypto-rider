@@ -20,10 +20,8 @@ deploy: clean ## Copies any changed file to the server
 	ssh ${PROJECTNAME} -C 'bash -l -c "mkdir -vp ./${PROJECTNAME}"'
 	rsync -avzr \
 		env.cfg \
-		main.py \
-		bot \
-		common \
-		config \
+		local_main.py \
+		app \
 		requirements \
 		scripts \
 		${PROJECTNAME}:./${PROJECTNAME}
@@ -34,14 +32,8 @@ start: deploy ## Sets up a screen session on the server and start the app
 stop: deploy ## Stop any running screen session on the server
 	ssh ${PROJECTNAME} -C 'bash -l -c "./${PROJECTNAME}/scripts/stop_bot.sh"'
 
-server: deploy ## Sets up dependencies required to run this bot
-	ssh ${PROJECTNAME} -C 'bash -l -c "./${PROJECTNAME}/scripts/setup_dependencies.sh"'
-
 ssh: ## SSH into the target VM
 	ssh ${PROJECTNAME}
-
-run: lint ## Run bot locally
-	./venv/bin/python3 main.py
 
 bpython: ## Runs bpython
 	./venv/bin/bpython
