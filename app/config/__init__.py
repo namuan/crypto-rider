@@ -16,6 +16,11 @@ def providers_fetch_delay():
     return int(config("PROVIDERS", "FETCH_DELAY_IN_SECS", 60))
 
 
+def provider_markets():
+    all_markets = config('PROVIDERS', 'MARKETS')
+    return all_markets.split(",")
+
+
 def init_logger():
     handlers = [
         logging.StreamHandler(),
