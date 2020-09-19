@@ -1,5 +1,6 @@
 import os
-
+import logging
+import pandas as pd
 from peewee import *
 
 from app.common import uuid_gen
@@ -40,6 +41,12 @@ class CandleStick(Model):
     def save_from(event):
         event["id"] = uuid_gen()
         CandleStick.insert(event).on_conflict_ignore().execute()
+
+
+def df_from_database(market, timestamp, limit):
+    logging.info("Getting last {} entries for market {} from database".format(limit, market))
+    query = CandleStick.select().where(CandleStick.market == market, CandleStick.timestamp <= timestamp).order_by(CandleStick.timestamp.desc()).limit(limit)
+    return pd.DataFrame(list(query.dicts()))
 
 
 CandleStick.create_table()

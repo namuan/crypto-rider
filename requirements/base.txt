@@ -2,3 +2,4 @@ click
 ccxt
 redis
 peewee
+pandas
