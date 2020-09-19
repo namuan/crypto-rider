@@ -3,6 +3,7 @@ import redis
 from app.models import db
 from app.providers.market_data_provider import MarketDataProvider
 from app.publishers.redis_publisher import RedisPublisher
+from app.storage.alert_data_store import AlertDataStore
 from app.storage.market_data_store import MarketDataStore
 
 
@@ -16,6 +17,7 @@ class ServiceLocator:
             redis_publisher=RedisPublisher(self),
             market_data_provider=MarketDataProvider(self),
             market_data_store=MarketDataStore(self),
+            alert_data_store=AlertDataStore(self),
         )
 
     def o(self, service):

@@ -1,6 +1,8 @@
 import configparser
 import logging
 
+ALERTS_CHANNEL = "alerts"
+
 
 def config(section, key, default_value=None):
     c = configparser.ConfigParser()

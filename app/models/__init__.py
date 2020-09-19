@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 import pandas as pd
 from peewee import *
 
@@ -43,6 +44,25 @@ class CandleStick(Model):
         CandleStick.insert(event).on_conflict_ignore().execute()
 
 
+class SignalAlert(Model):
+    id = UUIDField(primary_key=True)
+    strategy = CharField()
+    timestamp = BigIntegerField()
+    message = CharField()
+
+    class Meta:
+        database = db
+
+    @staticmethod
+    def event(timestamp, strategy, message):
+        return dict(timestamp=timestamp, strategy=strategy, message=message)
+
+    @staticmethod
+    def save_from(event):
+        event["id"] = uuid_gen()
+        SignalAlert.insert(event).execute()
+
+
 def df_from_database(market, timestamp, limit):
     logging.info(
         "Getting last {} entries for market {} from database".format(limit, market)
@@ -57,3 +77,4 @@ def df_from_database(market, timestamp, limit):
 
 
 CandleStick.create_table()
+SignalAlert.create_table()

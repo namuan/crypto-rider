@@ -18,6 +18,8 @@ def data_provider(skip_wait):
     # Setup everything waiting for events
     market_data_store = locator.o("market_data_store")
     market_data_store.start()
+    alert_data_store = locator.o("alert_data_store")
+    alert_data_store.start()
 
     # Initialise all strategies
     for strategy in all_strategies:
