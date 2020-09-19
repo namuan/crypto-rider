@@ -31,8 +31,8 @@ class BaseStrategy(Thread, BaseContainer):
                 logging.error(e)
 
     def load_df(self, limit=200):
-        market = self.last_event.get('market')
-        ts = self.last_event.get('timestamp')
+        market = self.last_event.get("market")
+        ts = self.last_event.get("timestamp")
         return df_from_database(market, ts, limit)
 
     def alert(self, signal):
@@ -40,7 +40,7 @@ class BaseStrategy(Thread, BaseContainer):
 
     def _can_handle(self, item):
         return (
-                item.get("type") == "message" and b2s(item.get("channel")) in self.channels
+            item.get("type") == "message" and b2s(item.get("channel")) in self.channels
         )
 
     def candle(self, df: DataFrame, rewind=0):

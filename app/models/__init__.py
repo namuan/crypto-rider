@@ -44,8 +44,15 @@ class CandleStick(Model):
 
 
 def df_from_database(market, timestamp, limit):
-    logging.info("Getting last {} entries for market {} from database".format(limit, market))
-    query = CandleStick.select().where(CandleStick.market == market, CandleStick.timestamp <= timestamp).order_by(CandleStick.timestamp.desc()).limit(limit)
+    logging.info(
+        "Getting last {} entries for market {} from database".format(limit, market)
+    )
+    query = (
+        CandleStick.select()
+        .where(CandleStick.market == market, CandleStick.timestamp <= timestamp)
+        .order_by(CandleStick.timestamp.desc())
+        .limit(limit)
+    )
     return pd.DataFrame(list(query.dicts()))
 
 

@@ -6,7 +6,11 @@ class SimpleStrategy(BaseStrategy):
         df = self.load_df(limit=300)
         signal = self.calculate_signal(df)
         if signal:
-            self.alert("Higher Close(Prev {}, Current {})".format(self.prev_close(df), self.close(df)))
+            self.alert(
+                "Higher Close(Prev {}, Current {})".format(
+                    self.prev_close(df), self.close(df)
+                )
+            )
 
     def calculate_signal(self, df):
         if self.prev_close(df) < self.close(df):
@@ -15,7 +19,7 @@ class SimpleStrategy(BaseStrategy):
             return False
 
     def close(self, df):
-        return self.candle(df)['close']
+        return self.candle(df)["close"]
 
     def prev_close(self, df):
-        return self.candle(df, rewind=1)['close']
+        return self.candle(df, rewind=1)["close"]
