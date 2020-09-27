@@ -19,6 +19,7 @@ clean: ## Clean package
 deploy: clean ## Copies any changed file to the server
 	ssh ${PROJECTNAME} -C 'bash -l -c "mkdir -vp ./${PROJECTNAME}"'
 	rsync -avzr \
+		.env \
 		env.cfg \
 		local_main.py \
 		app \

@@ -1,6 +1,7 @@
 import redis
 
 from app.models import db
+from app.notifiers.telegram_notifier import TelegramNotifier
 from app.providers.market_data_provider import MarketDataProvider
 from app.publishers.redis_publisher import RedisPublisher
 from app.storage.alert_data_store import AlertDataStore
@@ -18,6 +19,7 @@ class ServiceLocator:
             market_data_provider=MarketDataProvider(self),
             market_data_store=MarketDataStore(self),
             alert_data_store=AlertDataStore(self),
+            telegram_notifier=TelegramNotifier(self),
         )
 
     def o(self, service):

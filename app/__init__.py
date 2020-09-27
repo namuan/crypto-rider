@@ -25,6 +25,10 @@ def data_provider(skip_wait):
     for strategy in all_strategies:
         strategy.start()
 
+    # Start notifiers
+    telegram_notifier = locator.o("telegram_notifier")
+    telegram_notifier.start()
+
     # Start feeding
     market_data_provider = locator.o("market_data_provider")
     market_data_provider.start(skip_wait)

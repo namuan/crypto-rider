@@ -3,3 +3,4 @@ ccxt
 redis
 peewee
 pandas
+python-dotenv
