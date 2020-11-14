@@ -4,3 +4,4 @@ redis
 peewee
 pandas
 python-dotenv
+stockstats

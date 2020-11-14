@@ -1,6 +1,7 @@
 from threading import Thread
 
 from pandas import DataFrame
+from stockstats import StockDataFrame
 
 from app.common import candle_event_name
 from app.config import provider_exchange, provider_candle_timeframe, ALERTS_CHANNEL
@@ -28,7 +29,19 @@ class BaseStrategy(Thread, BaseContainer):
     def load_df(self, limit=200):
         market = self.last_event.get("market")
         ts = self.last_event.get("timestamp")
-        return df_from_database(market, ts, limit)
+        return self.wrap(df_from_database(market, ts, limit))
+
+    # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
+    def reshape_data(self, df, timedelta):
+        logic = {'open': 'first',
+                 'high': 'max',
+                 'low': 'min',
+                 'close': 'last',
+                 'volume': 'sum'}
+        return self.wrap(df.resample(timedelta).apply(logic))
+
+    def wrap(self, df):
+        return StockDataFrame.retype(df)
 
     def alert(self, message):
         data = SignalAlert.event(

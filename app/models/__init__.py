@@ -73,7 +73,9 @@ def df_from_database(market, timestamp, limit):
         .order_by(CandleStick.timestamp.desc())
         .limit(limit)
     )
-    return pd.DataFrame(list(query.dicts()))
+    df = pd.DataFrame(list(query.dicts()))
+    df["date"] = pd.to_datetime(df['timestamp'], unit='ms')
+    return df
 
 
 CandleStick.create_table()
