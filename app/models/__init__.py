@@ -48,14 +48,15 @@ class SignalAlert(Model):
     id = UUIDField(primary_key=True)
     strategy = CharField()
     timestamp = BigIntegerField()
+    market = CharField()
     message = CharField()
 
     class Meta:
         database = db
 
     @staticmethod
-    def event(timestamp, strategy, message):
-        return dict(timestamp=timestamp, strategy=strategy, message=message)
+    def event(timestamp, strategy, market, message):
+        return dict(timestamp=timestamp, strategy=strategy, market=market, message=message)
 
     @staticmethod
     def save_from(event):

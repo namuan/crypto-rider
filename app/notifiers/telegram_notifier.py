@@ -23,6 +23,9 @@ class TelegramNotifier(Thread, BaseContainer):
     def get_url(self, method, token):
         return "https://api.telegram.org/bot{}/{}".format(token, method)
 
+    def normalise_market(self, market):
+        return market.replace("/", "")
+
     def send_message(self, message, format="Markdown"):
         logging.info(message)
 
@@ -36,10 +39,15 @@ class TelegramNotifier(Thread, BaseContainer):
 
     def construct_message(self, event):
         ts = datetime.fromtimestamp(int(event.get("timestamp")) / 1000)
-        return """{} triggered at {}
+        return """**{}** triggered at {}
 {}
-[TradingView](https://uk.tradingview.com/chart/?symbol=BINANCE%3ABTCUSDT)
-""".format(event.get("strategy"), ts.strftime("%Y-%m-%d %H:%M:%S"), event.get("message"))
+[TradingView](https://uk.tradingview.com/chart/?symbol=BINANCE%3A{})
+""".format(
+            event.get("strategy"),
+            ts.strftime("%Y-%m-%d %H:%M:%S"),
+            event.get("message"),
+            self.normalise_market(event.get("market"))
+        )
 
     def run(self):
         for event in self.pull_event():

@@ -20,6 +20,7 @@ class BaseStrategy(Thread, BaseContainer):
             subscription_channel=candle_event_name(exchange_id, timeframe),
         )
         self.last_event = None
+        self.market = None
 
     def run(self) -> None:
         for event in self.pull_event():
@@ -27,9 +28,9 @@ class BaseStrategy(Thread, BaseContainer):
             self.apply()
 
     def load_df(self, limit=200):
-        market = self.last_event.get("market")
+        self.market = self.last_event.get("market")
         ts = self.last_event.get("timestamp")
-        return self.wrap(df_from_database(market, ts, limit))
+        return self.wrap(df_from_database(self.market, ts, limit))
 
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
     def reshape_data(self, df, timedelta):
@@ -45,7 +46,7 @@ class BaseStrategy(Thread, BaseContainer):
 
     def alert(self, message):
         data = SignalAlert.event(
-            self.last_event.get("timestamp"), self.strategy_name(), message
+            self.last_event.get("timestamp"), self.strategy_name(), self.market, message
         )
         self.lookup_object("redis_publisher").publish_data(ALERTS_CHANNEL, data)
 
