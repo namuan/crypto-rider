@@ -7,8 +7,8 @@ pd.set_option("display.width", None)
 
 
 class MaCrossBelowStrategy(BaseStrategy):
-    short_ma: int = 20
-    long_ma: int = 100
+    short_ma = 20
+    long_ma = 100
 
     def apply(self):
         df = self.load_df(limit=300)
@@ -23,8 +23,8 @@ class MaCrossBelowStrategy(BaseStrategy):
 
     def calculate_signal(self, df):
         return (
-                (df['close'] < df[f"close_{self.short_ma}_sma"]) &
-                (df['close'] < df[f"close_{self.long_ma}_sma"])
+                (df['close'] < df["close_{}_sma".format(self.short_ma)]) &
+                (df['close'] < df["close_{}_sma".format(self.long_ma)])
         ).iloc[-1]
 
     def close(self, df):
