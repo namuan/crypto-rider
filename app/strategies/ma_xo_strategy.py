@@ -12,7 +12,6 @@ class MaCrossOverStrategy(BaseStrategy):
     CLOSE_BETWEEN_MA_SIGNAL = 'close-between-ma'
     short_ma = 20
     long_ma = 100
-    last_alert = {}
 
     def apply(self):
         df = self.load_df(limit=300)
@@ -36,13 +35,13 @@ class MaCrossOverStrategy(BaseStrategy):
                                       calculated_long_ma)
 
     def is_new_alert_of_type(self, alert_type):
-        if not self.last_alert.get(self.market, False):
+        last_alert = self.find_last_alert_of(self.market)
+        if not last_alert:
             return True
 
-        return self.last_alert.get(self.market) != alert_type
+        return last_alert.alert_type != alert_type
 
     def build_and_send_alert(self, alert_market, alert_signal, last_close, calculated_short_ma, calculated_long_ma):
-        self.last_alert[alert_market] = alert_signal
         self.alert(
             "Market: **{}** - Close {} {} Short MA {} and Long MA {}".format(
                 alert_market,
@@ -50,7 +49,8 @@ class MaCrossOverStrategy(BaseStrategy):
                 alert_signal,
                 calculated_short_ma,
                 calculated_long_ma,
-            )
+            ),
+            alert_signal
         )
 
     def calc_ma(self, df, ma):

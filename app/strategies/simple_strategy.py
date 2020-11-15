@@ -9,7 +9,8 @@ class SimpleStrategy(BaseStrategy):
             self.alert(
                 "Higher Close(Prev {}, Current {})".format(
                     self.prev_close(df), self.close(df)
-                )
+                ),
+                'higher_close'
             )
 
     def calculate_signal(self, df):

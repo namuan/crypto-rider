@@ -27,6 +27,12 @@ class BaseStrategy(Thread, BaseContainer):
             self.last_event = event
             self.apply()
 
+    def find_last_alert_of(self, market):
+        return SignalAlert.select() \
+            .where(SignalAlert.market == market) \
+            .order_by(SignalAlert.timestamp.desc()) \
+            .first()
+
     def load_df(self, limit=200):
         self.market = self.last_event.get("market")
         ts = self.last_event.get("timestamp")
@@ -44,9 +50,9 @@ class BaseStrategy(Thread, BaseContainer):
     def wrap(self, df):
         return StockDataFrame.retype(df)
 
-    def alert(self, message):
+    def alert(self, message, alert_type):
         data = SignalAlert.event(
-            self.last_event.get("timestamp"), self.strategy_name(), self.market, message
+            self.last_event.get("timestamp"), self.strategy_name(), self.market, alert_type, message
         )
         self.lookup_object("redis_publisher").publish_data(ALERTS_CHANNEL, data)
 
