@@ -5,3 +5,4 @@ peewee
 pandas
 python-dotenv
 stockstats
+ta
