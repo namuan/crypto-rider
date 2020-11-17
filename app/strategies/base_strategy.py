@@ -1,4 +1,5 @@
 from threading import Thread
+import logging
 
 from pandas import DataFrame
 from stockstats import StockDataFrame
@@ -25,7 +26,16 @@ class BaseStrategy(Thread, BaseContainer):
     def run(self) -> None:
         for event in self.pull_event():
             self.last_event = event
-            self.apply()
+            df = self.calculate_indicators()
+            if self.can_buy(df):
+                message = self.alert_details(df)
+                self.alert(message, "BUY")
+            elif self.can_sell(df):
+                message = self.alert_details(df)
+                self.alert(message, "SELL")
+            else:
+                logging.info("Running {} -> No signal: {}".format(self.strategy_name(), self.candle(df)))
+
 
     def find_last_alert_of(self, market):
         return SignalAlert.select() \
@@ -50,7 +60,22 @@ class BaseStrategy(Thread, BaseContainer):
     def wrap(self, df):
         return StockDataFrame.retype(df)
 
+    def is_new_alert_of_type(self, alert_type):
+        last_alert = self.find_last_alert_of(self.market)
+        if not last_alert:
+            return True
+
+        return last_alert.alert_type != alert_type
+
     def alert(self, message, alert_type):
+        if not self.is_new_alert_of_type(alert_type):
+            logging.info("{} - Found duplicate alert {} for market {}".format(
+                self.strategy_name(),
+                self.market,
+                alert_type
+            ))
+            return
+
         data = SignalAlert.event(
             self.last_event.get("timestamp"), self.strategy_name(), self.market, alert_type, message
         )

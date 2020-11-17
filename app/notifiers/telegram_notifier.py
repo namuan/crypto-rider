@@ -39,11 +39,13 @@ class TelegramNotifier(Thread, BaseContainer):
 
     def construct_message(self, event):
         ts = datetime.fromtimestamp(int(event.get("timestamp")) / 1000)
-        return """**{}** triggered at {}
+        return """{} -> **{}** {} signal at {}
 {}
 [TradingView](https://uk.tradingview.com/chart/?symbol=BINANCE%3A{})
 """.format(
             event.get("strategy"),
+            event.get("market"),
+            event.get("alert_type"),
             ts.strftime("%Y-%m-%d %H:%M:%S"),
             event.get("message"),
             self.normalise_market(event.get("market"))
