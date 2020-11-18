@@ -67,7 +67,7 @@ class SignalAlert(Model):
 
 def df_from_database(market, timestamp, limit):
     logging.info(
-        "Getting last {} entries for market {} from database".format(limit, market)
+        "Getting last {} entries for market {} from database from {}".format(limit, market, timestamp)
     )
     query = (
         CandleStick.select()

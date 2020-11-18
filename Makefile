@@ -27,11 +27,14 @@ deploy: clean ## Copies any changed file to the server
 		scripts \
 		${PROJECTNAME}:./${PROJECTNAME}
 
-start: deploy ## Sets up a screen session on the server and start the app
-	ssh ${PROJECTNAME} -C 'bash -l -c "./${PROJECTNAME}/scripts/setup_bot.sh"'
+data: deploy ## Sets up a screen session on the server and start the app
+	ssh ${PROJECTNAME} -C 'bash -l -c "./${PROJECTNAME}/scripts/setup_data_provider.sh"'
+
+strategies: deploy ## Sets up a screen session on the server and start the app
+	ssh ${PROJECTNAME} -C 'bash -l -c "./${PROJECTNAME}/scripts/setup_strategy_runner.sh"'
 
 stop: deploy ## Stop any running screen session on the server
-	ssh ${PROJECTNAME} -C 'bash -l -c "./${PROJECTNAME}/scripts/stop_bot.sh"'
+	ssh ${PROJECTNAME} -C 'bash -l -c "./${PROJECTNAME}/scripts/stop_strategy_runner.sh"'
 
 ssh: ## SSH into the target VM
 	ssh ${PROJECTNAME}

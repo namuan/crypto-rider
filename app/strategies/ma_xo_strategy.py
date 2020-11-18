@@ -13,7 +13,7 @@ class MaCrossOverStrategy(BaseStrategy):
     long_ma = 50
 
     def calculate_indicators(self):
-        df = self.load_df(limit=300)
+        df = self.load_df(limit=100 * 60 * 6) # 6H * 300
         reshaped_df = self.reshape_data(df, timedelta='6H')
         _ = reshaped_df["close_{}_sma".format(self.short_ma)]
         _ = reshaped_df["close_{}_sma".format(self.long_ma)]

@@ -13,7 +13,7 @@ class EMABBAlligatorStrategy(BaseStrategy):
     SELL_SIGNAL = 'sell_signal'
 
     def calculate_indicators(self):
-        df = self.load_df(limit=300)
+        df = self.load_df(limit=50 * 60) # 1H * 300
         reshaped_df = self.reshape_data(df, timedelta='H')
         ema = ta.trend.EMAIndicator(close=reshaped_df['close'], n=3)
         reshaped_df['EMA_3'] = ema.ema_indicator()
