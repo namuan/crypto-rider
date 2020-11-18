@@ -21,13 +21,11 @@ class StrategyRunner(BaseContainer):
         self.all_strategies = [
             # SimpleStrategy(locator),
             MaCrossOverStrategy(locator),
-            EMABBAlligatorStrategy(locator)
+            EMABBAlligatorStrategy(locator),
         ]
 
     def start(self):
-        logging.info(
-            "Running StrategyRunner every {} seconds".format(self.delay)
-        )
+        logging.info("Running StrategyRunner every {} seconds".format(self.delay))
         self.scheduler.enter(self.delay, 1, self.run_strategies)
         self.scheduler.run()
 

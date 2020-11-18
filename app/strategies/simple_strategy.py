@@ -10,7 +10,7 @@ class SimpleStrategy(BaseStrategy):
                 "Higher Close(Prev {}, Current {})".format(
                     self.prev_close(df), self.close(df)
                 ),
-                'higher_close'
+                "higher_close",
             )
 
     def calculate_signal(self, df):

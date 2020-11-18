@@ -24,26 +24,34 @@ class BaseStrategy(BaseContainer):
             message = self.alert_details(df)
             alert_message, alert_type = message, "SELL"
         else:
-            logging.info("Running {} -> No signal: {}".format(self.strategy_name(), self.candle(df)))
+            logging.info(
+                "Running {} -> No signal: {}".format(
+                    self.strategy_name(), self.candle(df)
+                )
+            )
 
         return alert_message, alert_type
 
     def find_last_alert_of(self, market):
-        return SignalAlert.select() \
-            .where(SignalAlert.market == market) \
-            .order_by(SignalAlert.timestamp.desc()) \
+        return (
+            SignalAlert.select()
+            .where(SignalAlert.market == market)
+            .order_by(SignalAlert.timestamp.desc())
             .first()
+        )
 
     def load_df(self, limit=200):
         return self.wrap(df_from_database(self.market, self.at_time, limit))
 
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
     def reshape_data(self, df, timedelta):
-        logic = {'open': 'first',
-                 'high': 'max',
-                 'low': 'min',
-                 'close': 'last',
-                 'volume': 'sum'}
+        logic = {
+            "open": "first",
+            "high": "max",
+            "low": "min",
+            "close": "last",
+            "volume": "sum",
+        }
         return self.wrap(df.resample(timedelta).apply(logic))
 
     def wrap(self, df):
@@ -58,11 +66,11 @@ class BaseStrategy(BaseContainer):
 
     def alert(self, message, alert_type):
         if not self.is_new_alert_of_type(alert_type):
-            logging.info("{} - Found duplicate alert {} for market {}".format(
-                self.strategy_name(),
-                self.market,
-                alert_type
-            ))
+            logging.info(
+                "{} - Found duplicate alert {} for market {}".format(
+                    self.strategy_name(), self.market, alert_type
+                )
+            )
             return
 
         data = SignalAlert.event(

@@ -36,12 +36,10 @@ def crossed(series1, series2, direction=None):
         series2 = pd.Series(index=series1.index, data=series2)
 
     if direction is None or direction == "above":
-        above = pd.Series((series1 > series2) & (
-                series1.shift(1) <= series2.shift(1)))
+        above = pd.Series((series1 > series2) & (series1.shift(1) <= series2.shift(1)))
 
     if direction is None or direction == "below":
-        below = pd.Series((series1 < series2) & (
-                series1.shift(1) >= series2.shift(1)))
+        below = pd.Series((series1 < series2) & (series1.shift(1) >= series2.shift(1)))
 
     if direction is None:
         return above or below

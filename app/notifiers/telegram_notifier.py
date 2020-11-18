@@ -48,7 +48,7 @@ class TelegramNotifier(Thread, BaseContainer):
             event.get("alert_type"),
             ts.strftime("%Y-%m-%d %H:%M:%S"),
             event.get("message"),
-            self.normalise_market(event.get("market"))
+            self.normalise_market(event.get("market")),
         )
 
     def run(self):

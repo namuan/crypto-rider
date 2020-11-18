@@ -57,7 +57,13 @@ class SignalAlert(Model):
 
     @staticmethod
     def event(timestamp, strategy, market, alert_type, message):
-        return dict(timestamp=timestamp, strategy=strategy, market=market, alert_type=alert_type, message=message)
+        return dict(
+            timestamp=timestamp,
+            strategy=strategy,
+            market=market,
+            alert_type=alert_type,
+            message=message,
+        )
 
     @staticmethod
     def save_from(event):
@@ -67,7 +73,9 @@ class SignalAlert(Model):
 
 def df_from_database(market, timestamp, limit):
     logging.info(
-        "Getting last {} entries for market {} from database from {}".format(limit, market, timestamp)
+        "Getting last {} entries for market {} from database from {}".format(
+            limit, market, timestamp
+        )
     )
     query = (
         CandleStick.select()
@@ -76,7 +84,7 @@ def df_from_database(market, timestamp, limit):
         .limit(limit)
     )
     df = pd.DataFrame(list(query.dicts()))
-    df["date"] = pd.to_datetime(df['timestamp'], unit='ms')
+    df["date"] = pd.to_datetime(df["timestamp"], unit="ms")
     return df
 
 
