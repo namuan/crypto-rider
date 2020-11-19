@@ -44,7 +44,7 @@ def strategy_runner():
 
 
 @cli.command()
-@click.option("--market", help="Market ticker", required=True)
+@click.option("--market", help="Market", required=True)
 @click.option(
     "--data-file",
     help="JSON file with historical ohlcv data",
@@ -61,7 +61,7 @@ def load_historical_data(market, data_file):
 
 
 @cli.command()
-@click.option("--market", help="Market ticker", required=True)
+@click.option("--market", help="Market", required=True)
 @click.option("--since", help="Since", required=True)
 def download_historical_data(market, since):
     market_data_store = locator.o("market_data_store")
@@ -69,3 +69,16 @@ def download_historical_data(market, since):
 
     market_data_provider = locator.o("market_data_provider")
     market_data_provider.download_historical_data(market, since)
+
+
+@cli.command()
+@click.option("--market", help="Market", required=True)
+@click.option("--since", help="Since", required=True)
+@click.option("--to", help="To", required=True)
+@click.option("--strategy", help="Strategy to backtest", required=True)
+def back_test(market, since, to, strategy):
+    alert_data_store = locator.o("alert_data_store")
+    alert_data_store.start()
+
+    strategy_runner = locator.o("strategy_runner")
+    strategy_runner.run_back_test(market, since, to, strategy)

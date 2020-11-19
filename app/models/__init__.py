@@ -51,18 +51,20 @@ class SignalAlert(Model):
     market = CharField()
     alert_type = CharField()
     message = CharField()
+    close_price = FloatField()
 
     class Meta:
         database = db
 
     @staticmethod
-    def event(timestamp, strategy, market, alert_type, message):
+    def event(timestamp, strategy, market, alert_type, message, close_price):
         return dict(
             timestamp=timestamp,
             strategy=strategy,
             market=market,
             alert_type=alert_type,
             message=message,
+            close_price=close_price
         )
 
     @staticmethod

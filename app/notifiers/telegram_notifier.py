@@ -35,7 +35,7 @@ class TelegramNotifier(Thread, BaseContainer):
             "parse_mode": format,
             "disable_web_page_preview": True,
         }
-        return requests.post(self.get_url("sendMessage", BOT_TOKEN), data=data)
+        requests.post(self.get_url("sendMessage", BOT_TOKEN), data=data)
 
     def construct_message(self, event):
         ts = datetime.fromtimestamp(int(event.get("timestamp")) / 1000)
