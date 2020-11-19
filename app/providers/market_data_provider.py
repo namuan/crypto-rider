@@ -59,19 +59,29 @@ class MarketDataProvider(BaseContainer):
             self.lookup_object("redis_publisher").publish_data(
                 candle_event_name(self.exchange_id, self.timeframe), data
             )
-        logging.info("Finished loading historical market data. Total {}".format(len(candle_data_items)))
+        logging.info(
+            "Finished loading historical market data. Total {}".format(
+                len(candle_data_items)
+            )
+        )
 
     def download_historical_data(self, market, since):
         ts = datetime.strptime(since, "%Y-%m-%d")
-        logging.info("Downloading historical data for {} from exchange {} since {}".format(
-            market,
-            self.exchange_id,
-            ts
-        ))
-        candle_data_items = self.exchange.fetch_ohlcv(market, '1d', since=ts.timestamp() * 1000)
+        logging.info(
+            "Downloading historical data for {} from exchange {} since {}".format(
+                market, self.exchange_id, ts
+            )
+        )
+        candle_data_items = self.exchange.fetch_ohlcv(
+            market, "1d", since=ts.timestamp() * 1000
+        )
         for candle_data in candle_data_items:
             data = CandleStick.event(self.exchange_id, market, *candle_data)
             self.lookup_object("redis_publisher").publish_data(
                 candle_event_name(self.exchange_id, self.timeframe), data
             )
-        logging.info("Finished loading historical market data. Total {}".format(len(candle_data_items)))
+        logging.info(
+            "Finished loading historical market data. Total {}".format(
+                len(candle_data_items)
+            )
+        )
