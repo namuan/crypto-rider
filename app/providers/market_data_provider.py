@@ -1,6 +1,7 @@
+import json
 import logging
 import sched
-
+from datetime import datetime
 import ccxt
 
 from app.common import candle_event_name
@@ -49,3 +50,28 @@ class MarketDataProvider(BaseContainer):
                 candle_event_name(self.exchange_id, self.timeframe), data
             )
         self.scheduler.enter(self.delay, 1, self.provide_market_data)
+
+    def load_historical_data(self, market, data_file):
+        logging.info("Loading historical data for {}".format(market))
+        candle_data_items = json.loads(data_file.read())
+        for candle_data in candle_data_items:
+            data = CandleStick.event(self.exchange_id, market, *candle_data)
+            self.lookup_object("redis_publisher").publish_data(
+                candle_event_name(self.exchange_id, self.timeframe), data
+            )
+        logging.info("Finished loading historical market data. Total {}".format(len(candle_data_items)))
+
+    def download_historical_data(self, market, since):
+        ts = datetime.strptime(since, "%Y-%m-%d")
+        logging.info("Downloading historical data for {} from exchange {} since {}".format(
+            market,
+            self.exchange_id,
+            ts
+        ))
+        candle_data_items = self.exchange.fetch_ohlcv(market, '1d', since=ts.timestamp() * 1000)
+        for candle_data in candle_data_items:
+            data = CandleStick.event(self.exchange_id, market, *candle_data)
+            self.lookup_object("redis_publisher").publish_data(
+                candle_event_name(self.exchange_id, self.timeframe), data
+            )
+        logging.info("Finished loading historical market data. Total {}".format(len(candle_data_items)))

@@ -1,4 +1,10 @@
+import io
+import sys
+
 import click
+
+ENCODE_IN = 'utf-8'
+ENCODE_OUT = 'utf-8'
 
 from app.config import init_logger
 from app.config.service_locators import locator
@@ -35,3 +41,29 @@ def strategy_runner():
     # Strategy runner
     strategy_runner = locator.o("strategy_runner")
     strategy_runner.start()
+
+
+@cli.command()
+@click.option("--market", help="Market ticker", required=True)
+@click.option("--data-file", help="JSON file with historical ohlcv data", required=True,
+              type=lambda x: open(x, encoding=ENCODE_IN),
+              default=io.TextIOWrapper(
+                  sys.stdin.buffer, encoding=ENCODE_IN)
+              )
+def load_historical_data(market, data_file):
+    market_data_store = locator.o("market_data_store")
+    market_data_store.start()
+
+    market_data_provider = locator.o("market_data_provider")
+    market_data_provider.load_historical_data(market, data_file)
+
+
+@cli.command()
+@click.option("--market", help="Market ticker", required=True)
+@click.option("--since", help="Since", required=True)
+def download_historical_data(market, since):
+    market_data_store = locator.o("market_data_store")
+    market_data_store.start()
+
+    market_data_provider = locator.o("market_data_provider")
+    market_data_provider.download_historical_data(market, since)
