@@ -44,18 +44,17 @@ class ReportPublisher(BaseContainer):
         open_at_start, close_at_end, buy_and_hold_profit_loss, buy_hold_pct_change = self._buy_and_hold_change(
             market_data_df)
         total_profit_loss = (order_data_df["sell_price"] - order_data_df["buy_price"]).sum()
+        total_profit_loss_pct = ((order_data_df["sell_price"] - order_data_df["buy_price"]) / order_data_df["buy_price"]).sum() * 100
         return [
             ["Metric", "Value"],
             ["Market", market],
             ["Start at", dt_from],
             ["End at", dt_to],
             ["Total trades", len(order_data_df)],
-            ["Total P/L", "{:.2f}".format(total_profit_loss)],
-            # ["Total P/L %", "{:.2f}".format()],
             ["Open at start", open_at_start],
             ["Close at end", "{:.2f}".format(close_at_end)],
-            ["Buy and Hold P/L", "{:.2f}".format(buy_and_hold_profit_loss)],
-            ["Buy and Hold P/L %", "{:.2f} %".format(buy_hold_pct_change)],
+            ["Total P/L (%)", "{:.2f} ({:.2f} %) ".format(total_profit_loss, total_profit_loss_pct)],
+            ["Buy and Hold P/L (%)", "{:.2f} ({:.2f} %)".format(buy_and_hold_profit_loss, buy_hold_pct_change)],
         ]
 
     def _generate_orders_list(self, market, order_data_df):
