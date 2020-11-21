@@ -1,7 +1,8 @@
 import pandas as pd
-
+import mplfinance as mpf
 from app.common import reshape_data
 from app.strategies.base_strategy import BaseStrategy
+from datetime import timedelta
 
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
@@ -46,3 +47,11 @@ class MaCrossOverStrategy(BaseStrategy):
             calculated_short_ma,
             calculated_long_ma,
         )
+
+    def get_additional_plots(self, market, dt_since, dt_to):
+        df = self.calculate_indicators()
+        dt_end = dt_to - timedelta(days=1)
+        return [
+            mpf.make_addplot(df[self.short_ma_indicator][dt_since:dt_end], linestyle="dashed"),
+            mpf.make_addplot(df[self.long_ma_indicator][dt_since:dt_end], linestyle="dashed")
+        ]

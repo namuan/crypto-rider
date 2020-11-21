@@ -76,3 +76,6 @@ class BaseStrategy(BaseContainer):
 
     def strategy_name(self):
         return self.__class__.__name__
+
+    def get_additional_plots(self, market, dt_since, dt_to):
+        return []

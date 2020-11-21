@@ -4,6 +4,7 @@ import mplfinance as mpf
 from tabulate import tabulate
 
 from app.config.basecontainer import BaseContainer
+import numpy as np
 
 
 class ReportPublisher(BaseContainer):
@@ -17,6 +18,23 @@ class ReportPublisher(BaseContainer):
                           self._generate_summary(market, dt_since, dt_to, market_data_df, order_data_df))
         self._print_table("Trades", self._generate_orders_list(market, order_data_df))
         self._print_table("Alerts", self._generate_alerts_list(market, alerts_df))
+
+
+    def plot_chart(self, market, dt_from, dt_to, additional_plots):
+        market_data_df = self.lookup_object("market_data_store").fetch_data(market, dt_from, dt_to)
+        order_data_df = self.lookup_object("order_data_store").fetch_data()
+        market_data_df['buy'] = np.where(market_data_df.timestamp.isin(order_data_df.buy_timestamp), market_data_df.close * 1.01, np.nan)
+        additional_plots.append(mpf.make_addplot(market_data_df.buy, type='scatter', color='g', markersize=50, marker='^'))
+
+        market_data_df['sell'] = np.where(market_data_df.timestamp.isin(order_data_df.sell_timestamp), market_data_df.close * 1.01, np.nan)
+        additional_plots.append(mpf.make_addplot(market_data_df.sell, type='scatter', color='r', markersize=50, marker='v'))
+        mpf.plot(
+            market_data_df,
+            type="line",
+            volume=True,
+            addplot=additional_plots,
+            style="yahoo",
+        )
 
     def _print_table(self, title, data):
         print("===== {} =====".format(title))
@@ -81,22 +99,6 @@ class ReportPublisher(BaseContainer):
                 alert.get("message")
             ])
         return alerts_list
-
-    def _plot_chart(self, market_data, expanded_market_data, dt_from, dt_to):
-        close_50_sma = expanded_market_data["close"].rolling(50).mean()
-        close_100_sma = expanded_market_data["close"].rolling(100).mean()
-        additional_plts = [
-            mpf.make_addplot(close_50_sma[dt_from:dt_to], linestyle="dashed"),
-            mpf.make_addplot(close_100_sma[dt_from:dt_to], linestyle="dashed")
-        ]
-        mpf.plot(
-            market_data,
-            type="line",
-            volume=True,
-            # savefig=save,
-            addplot=additional_plts,
-            style="yahoo",
-        )
 
     def _buy_and_hold_change(self, df):
         open_at_start = df["open"].iloc[0]

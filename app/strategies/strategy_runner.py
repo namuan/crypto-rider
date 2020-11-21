@@ -62,8 +62,12 @@ class StrategyRunner(BaseContainer):
             self.process_market_strategy(market, selected_strategy, ts_start=dt_in_range.timestamp())
 
         self.lookup_object("order_data_store").force_close(market, dt_since, dt_to)
-
         self.lookup_object("report_publisher").generate_report(market, dt_since, dt_to)
+
+        # Plot chart
+        additional_plots = selected_strategy.get_additional_plots(market, dt_since, dt_to)
+        self.lookup_object("report_publisher").plot_chart(market, dt_since, dt_to, additional_plots)
+
 
     def process_market_strategy(self, market, strategy, ts_start=int(time())):
         alert_message, alert_type = strategy.run(market, ts_start * 1000)
