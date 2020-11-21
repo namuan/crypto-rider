@@ -80,5 +80,8 @@ def back_test(market, since, to, strategy):
     alert_data_store = locator.o("alert_data_store")
     alert_data_store.start()
 
+    order_data_store = locator.o("order_data_store")
+    order_data_store.start()
+
     strategy_runner = locator.o("strategy_runner")
     strategy_runner.run_back_test(market, since, to, strategy)

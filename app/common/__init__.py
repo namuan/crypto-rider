@@ -2,6 +2,7 @@ import json
 import uuid
 import pandas as pd
 import numpy as np
+from stockstats import StockDataFrame
 
 UTF_ENCODING = "utf-8"
 
@@ -53,3 +54,23 @@ def crossed_above(series1, series2):
 
 def crossed_below(series1, series2):
     return crossed(series1, series2, "below")
+
+
+def normalise_market(market):
+    return market.replace("/", "")
+
+
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#dateoffset-objects
+def reshape_data(df, timedelta):
+    logic = {
+        "open": "first",
+        "high": "max",
+        "low": "min",
+        "close": "last",
+        "volume": "sum",
+    }
+    return wrap(df.resample(timedelta).apply(logic))
+
+
+def wrap(df):
+    return StockDataFrame.retype(df)

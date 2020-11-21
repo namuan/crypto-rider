@@ -1,5 +1,6 @@
 import pandas as pd
 
+from app.common import reshape_data
 from app.strategies.base_strategy import BaseStrategy
 
 pd.set_option("display.max_columns", None)
@@ -9,14 +10,14 @@ pd.set_option("display.width", None)
 class MaCrossOverStrategy(BaseStrategy):
     CLOSE_BELOW_MA_SIGNAL = "close-below-ma"
     CLOSE_ABOVE_MA_SIGNAL = "close-above-ma"
-    short_ma = 50
-    long_ma = 100
+    short_ma = 20
+    long_ma = 50
     short_ma_indicator = "close_{}_sma".format(short_ma)
     long_ma_indicator = "close_{}_sma".format(long_ma)
 
     def calculate_indicators(self):
-        df = self.load_df(limit=500)  # 6H * 300
-        reshaped_df = self.reshape_data(df, timedelta="1d")
+        df = self.load_df(limit=1000)  # 6H * 300
+        reshaped_df = reshape_data(df, timedelta="1d")
         _ = reshaped_df[self.short_ma_indicator]
         _ = reshaped_df[self.long_ma_indicator]
         return reshaped_df

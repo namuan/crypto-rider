@@ -6,6 +6,7 @@ from threading import Thread
 import requests
 from dotenv import load_dotenv
 
+from app.common import normalise_market
 from app.config import ALERTS_CHANNEL
 from app.config.basecontainer import BaseContainer
 
@@ -22,9 +23,6 @@ class TelegramNotifier(Thread, BaseContainer):
 
     def get_url(self, method, token):
         return "https://api.telegram.org/bot{}/{}".format(token, method)
-
-    def normalise_market(self, market):
-        return market.replace("/", "")
 
     def send_message(self, message, format="Markdown"):
         logging.info(message)
@@ -48,7 +46,7 @@ class TelegramNotifier(Thread, BaseContainer):
             event.get("alert_type"),
             ts.strftime("%Y-%m-%d %H:%M:%S"),
             event.get("message"),
-            self.normalise_market(event.get("market")),
+            normalise_market(event.get("market")),
         )
 
     def run(self):

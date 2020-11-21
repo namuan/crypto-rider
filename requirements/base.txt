@@ -6,3 +6,5 @@ pandas
 python-dotenv
 stockstats
 ta
+tabulate
+mplfinance

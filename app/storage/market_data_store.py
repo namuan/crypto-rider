@@ -4,7 +4,7 @@ from threading import Thread
 from app.common import b2s, json_from_bytes, candle_event_name
 from app.config import provider_exchange, provider_candle_timeframe
 from app.config.basecontainer import BaseContainer
-from app.models import CandleStick
+from app.models import CandleStick, market_data_between
 
 
 class MarketDataStore(Thread, BaseContainer):
@@ -17,6 +17,9 @@ class MarketDataStore(Thread, BaseContainer):
         self.channels = [candle_event_name(exchange_id, timeframe)]
         self.pubsub = redis_instance.pubsub()
         self.pubsub.subscribe(self.channels)
+
+    def fetch_data(self, market, dt_from, dt_to):
+        return market_data_between(market, dt_from.timestamp() * 1000, dt_to.timestamp() * 1000)
 
     def run(self):
         for item in self.pubsub.listen():

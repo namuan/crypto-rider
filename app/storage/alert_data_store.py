@@ -3,7 +3,7 @@ from threading import Thread
 
 from app.config import ALERTS_CHANNEL
 from app.config.basecontainer import BaseContainer
-from app.models import SignalAlert
+from app.models import SignalAlert, alerts_df_from_database
 
 
 class AlertDataStore(Thread, BaseContainer):
@@ -18,6 +18,9 @@ class AlertDataStore(Thread, BaseContainer):
 
     def clear_data(self):
         SignalAlert.delete().execute()
+
+    def fetch_data(self):
+        return alerts_df_from_database()
 
     def save_alert(self, event):
         logging.info("Saving Alert: {}".format(event))
