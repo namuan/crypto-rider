@@ -64,7 +64,7 @@ class SignalAlert(Model):
             market=market,
             alert_type=alert_type,
             message=message,
-            close_price=close_price
+            close_price=close_price,
         )
 
     @staticmethod
@@ -76,7 +76,7 @@ class SignalAlert(Model):
 def df_from_database(market, timestamp, limit):
     logging.info(
         "Getting last {} entries for market {} from database from {} => {}".format(
-            limit, market, timestamp, datetime.fromtimestamp(timestamp/1000)
+            limit, market, timestamp, datetime.fromtimestamp(timestamp / 1000)
         )
     )
     query = (

@@ -49,12 +49,11 @@ class StrategyRunner(BaseContainer):
 
         dt_since = datetime.strptime(since, "%Y-%m-%d")
         dt_to = datetime.strptime(to, "%Y-%m-%d")
-        logging.info("Running backtest for {}, from {} to {} with {}".format(
-            market,
-            dt_since,
-            dt_to,
-            selected_strategy
-        ))
+        logging.info(
+            "Running backtest for {}, from {} to {} with {}".format(
+                market, dt_since, dt_to, selected_strategy
+            )
+        )
 
         for strategy in self.all_strategies:
             if type(strategy).__name__ == selected_strategy:
