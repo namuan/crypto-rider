@@ -2,7 +2,7 @@ import logging
 
 from pandas import DataFrame
 from stockstats import StockDataFrame
-
+from time import time_ns
 from app.config import ALERTS_CHANNEL
 from app.config.basecontainer import BaseContainer
 from app.models import df_from_database, SignalAlert
@@ -37,9 +37,9 @@ class BaseStrategy(BaseContainer):
     def find_last_alert_of(self, market):
         return (
             SignalAlert.select()
-            .where(SignalAlert.market == market)
-            .order_by(SignalAlert.timestamp.desc())
-            .first()
+                .where(SignalAlert.market == market)
+                .order_by(SignalAlert.timestamp.desc())
+                .first()
         )
 
     def load_df(self, limit=200):
@@ -76,7 +76,7 @@ class BaseStrategy(BaseContainer):
             return
 
         data = SignalAlert.event(
-            self.at_time, self.strategy_name(), self.market, alert_type, message, self.last_candle['close']
+            time_ns(), self.strategy_name(), self.market, alert_type, message, self.last_candle['close']
         )
         self.lookup_object("redis_publisher").publish_data(ALERTS_CHANNEL, data)
 

@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 from peewee import *
-
+from datetime import datetime
 from app.common import uuid_gen
 
 home_dir = os.getenv("HOME")
@@ -75,8 +75,8 @@ class SignalAlert(Model):
 
 def df_from_database(market, timestamp, limit):
     logging.info(
-        "Getting last {} entries for market {} from database from {}".format(
-            limit, market, timestamp
+        "Getting last {} entries for market {} from database from {} => {}".format(
+            limit, market, timestamp, datetime.fromtimestamp(timestamp/1000)
         )
     )
     query = (

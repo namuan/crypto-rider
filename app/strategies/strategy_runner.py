@@ -45,6 +45,8 @@ class StrategyRunner(BaseContainer):
             strategy.alert(alert_message, alert_type)
 
     def run_back_test(self, market, since, to, selected_strategy):
+        self.lookup_object("alert_data_store").clear_data()
+
         dt_since = datetime.strptime(since, "%Y-%m-%d")
         dt_to = datetime.strptime(to, "%Y-%m-%d")
         logging.info("Running backtest for {}, from {} to {} with {}".format(
