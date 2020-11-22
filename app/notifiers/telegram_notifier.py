@@ -20,6 +20,7 @@ class TelegramNotifier(Thread, BaseContainer):
     def __init__(self, locator):
         Thread.__init__(self)
         BaseContainer.__init__(self, locator, subscription_channel=ALERTS_CHANNEL)
+        self.daemon = True
 
     def get_url(self, method, token):
         return "https://api.telegram.org/bot{}/{}".format(token, method)

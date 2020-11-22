@@ -110,6 +110,18 @@ class TradeOrder(Model):
             sell_reason=sell_reason,
         )
 
+    def to_event(self):
+        return TradeOrder.event(
+            self.strategy,
+            self.buy_timestamp,
+            self.sell_timestamp,
+            self.market,
+            self.buy_price,
+            self.sell_price,
+            self.is_open,
+            self.sell_reason
+        )
+
     @staticmethod
     def save_from(event):
         event["id"] = uuid_gen()

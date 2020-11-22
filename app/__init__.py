@@ -37,6 +37,8 @@ def strategy_runner():
     # Start notifiers
     telegram_notifier = locator.o("telegram_notifier")
     telegram_notifier.start()
+    pushover_notifier = locator.o("pushover_notifier")
+    pushover_notifier.start()
 
     # Strategy runner
     strategy_runner = locator.o("strategy_runner")

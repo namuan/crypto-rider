@@ -25,11 +25,11 @@ class StrategyRunner(BaseContainer):
     def __init__(self, locator):
         BaseContainer.__init__(self, locator)
         self.all_strategies = [
-            SimpleStrategy(locator),
+            # SimpleStrategy(locator),
             RsiZoneStrategy(locator),
-            CloseCrossEmaStrategy(locator),
+            # CloseCrossEmaStrategy(locator),
             MaCrossOverStrategy(locator),
-            EMABBAlligatorStrategy(locator),
+            # EMABBAlligatorStrategy(locator),
         ]
 
     def start(self):

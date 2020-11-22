@@ -2,6 +2,7 @@ import configparser
 import logging
 
 ALERTS_CHANNEL = "alerts"
+ORDERS_CHANNEL = "orders"
 
 
 def config(section, key, default_value=None):

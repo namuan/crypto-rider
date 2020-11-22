@@ -1,6 +1,7 @@
 import redis
 
 from app.models import db
+from app.notifiers.pushover_notifier import PushoverNotifier
 from app.notifiers.telegram_notifier import TelegramNotifier
 from app.providers.market_data_provider import MarketDataProvider
 from app.publishers.redis_publisher import RedisPublisher
@@ -23,6 +24,7 @@ class ServiceLocator:
             market_data_store=MarketDataStore(self),
             alert_data_store=AlertDataStore(self),
             telegram_notifier=TelegramNotifier(self),
+            pushover_notifier=PushoverNotifier(self),
             strategy_runner=StrategyRunner(self),
             report_publisher=ReportPublisher(self),
             order_data_store=OrderDataStore(self),

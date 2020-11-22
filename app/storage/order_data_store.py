@@ -3,7 +3,7 @@ from threading import Thread
 
 import pandas as pd
 
-from app.config import ALERTS_CHANNEL
+from app.config import ALERTS_CHANNEL, ORDERS_CHANNEL
 from app.config.basecontainer import BaseContainer
 from app.models import TradeOrder
 
@@ -90,16 +90,19 @@ class OrderDataStore(Thread, BaseContainer):
             trade_order.is_open = False
             trade_order.save()
 
+            self.lookup_object("redis_publisher").publish_data(ORDERS_CHANNEL, trade_order.to_event())
+
     def _save_new_order(self, event):
-        TradeOrder.save_from(
-            dict(
-                strategy=event.get("strategy"),
-                buy_timestamp=event.get("timestamp"),
-                market=event.get("market"),
-                buy_price=event.get("close_price"),
-                is_open=True,
-            )
+        order_event = dict(
+            strategy=event.get("strategy"),
+            buy_timestamp=event.get("timestamp"),
+            market=event.get("market"),
+            buy_price=event.get("close_price"),
+            is_open=True,
         )
+        self.lookup_object("redis_publisher").publish_data(ORDERS_CHANNEL, order_event)
+        TradeOrder.save_from(order_event)
+
 
     def _close_existing_order(self, trade_order, event):
         trade_order.sell_timestamp = event.get("timestamp")
@@ -108,7 +111,9 @@ class OrderDataStore(Thread, BaseContainer):
         trade_order.is_open = False
         trade_order.save()
 
-    def last_trade_order(self, market, strategy):
+        self.lookup_object("redis_publisher").publish_data(ORDERS_CHANNEL, trade_order.to_event())
+
+    def last_trade_order(self, market, strategy) -> TradeOrder:
         logging.info("Last trade order for market {}, strategy {}".format(market, strategy))
         return (
             TradeOrder.select()
