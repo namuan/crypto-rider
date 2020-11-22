@@ -33,10 +33,10 @@ class BaseStrategy(BaseContainer):
         self.last_candle = self.candle(df)
         return alert_message, alert_type
 
-    def find_last_alert_of(self, market):
+    def find_last_alert_of(self, market, strategy):
         return (
             SignalAlert.select()
-            .where(SignalAlert.market == market)
+            .where(SignalAlert.market == market, SignalAlert.strategy == strategy)
             .order_by(SignalAlert.timestamp.desc())
             .first()
         )
@@ -47,7 +47,7 @@ class BaseStrategy(BaseContainer):
         )
 
     def is_new_alert_of_type(self, alert_type):
-        last_alert = self.find_last_alert_of(self.market)
+        last_alert = self.find_last_alert_of(self.market, self.strategy_name())
         if not last_alert:
             return True
 

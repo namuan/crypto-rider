@@ -24,39 +24,40 @@ class ReportPublisher(BaseContainer):
         self._print_table("Trades", self._generate_orders_list(market, order_data_df))
         self._print_table("Alerts", self._generate_alerts_list(market, alerts_df))
 
-    def plot_chart(self, market, dt_from, dt_to, additional_plots):
+    def plot_chart(self, market, strategy, dt_from, dt_to, additional_plots):
         market_data_df = self.lookup_object("market_data_store").fetch_data_between(
             market, dt_from, dt_to
         )
-        order_data_df = self.lookup_object("order_data_store").fetch_data()
-        market_data_df["buy"] = np.where(
-            market_data_df.timestamp.isin(order_data_df.buy_timestamp),
-            market_data_df.close * 1.01,
-            np.nan,
-        )
-        # additional_plots = []
-        additional_plots.append(
-            mpf.make_addplot(
-                market_data_df.buy, type="scatter", color="g", markersize=50, marker="^"
+        order_data_df = self.lookup_object("order_data_store").fetch_data_with_strategy(strategy)
+        if not order_data_df.empty:
+            market_data_df["buy"] = np.where(
+                market_data_df.timestamp.isin(order_data_df.buy_timestamp),
+                market_data_df.close * 1.01,
+                np.nan,
             )
-        )
+            additional_plots.append(
+                mpf.make_addplot(
+                    market_data_df.buy, type="scatter", color="g", markersize=50, marker="^"
+                )
+            )
 
-        market_data_df["sell"] = np.where(
-            market_data_df.timestamp.isin(order_data_df.sell_timestamp),
-            market_data_df.close * 1.01,
-            np.nan,
-        )
-        additional_plots.append(
-            mpf.make_addplot(
-                market_data_df.sell,
-                type="scatter",
-                color="r",
-                markersize=50,
-                marker="v",
+            market_data_df["sell"] = np.where(
+                market_data_df.timestamp.isin(order_data_df.sell_timestamp),
+                market_data_df.close * 1.01,
+                np.nan,
             )
-        )
+            additional_plots.append(
+                mpf.make_addplot(
+                    market_data_df.sell,
+                    type="scatter",
+                    color="r",
+                    markersize=50,
+                    marker="v",
+                )
+            )
         mpf.plot(
             market_data_df,
+            title="{}".format(strategy),
             type="line",
             volume=True,
             addplot=additional_plots,
