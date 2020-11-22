@@ -17,26 +17,28 @@ class CloseCrossEmaStrategy(BaseStrategy):
 
     def can_sell(self, df):
         prev_candle = self.candle(df)
-        candle_2_close = self.candle(df, rewind=-2)['close']
+        candle_2_close = self.candle(df, rewind=-2)["close"]
         last_close = prev_candle["close"]
         calculated_short_ma = prev_candle[self.short_indicator]
         calculated_long_ma = prev_candle[self.long_indicator]
         return [
-            candle_2_close < calculated_short_ma and candle_2_close < calculated_long_ma,
+            candle_2_close < calculated_short_ma
+            and candle_2_close < calculated_long_ma,
             last_close < calculated_short_ma and last_close < calculated_long_ma,
-            calculated_short_ma < calculated_long_ma
+            calculated_short_ma < calculated_long_ma,
         ]
 
     def can_buy(self, df):
         prev_candle = self.candle(df)
-        candle_2_close = self.candle(df, rewind=-2)['close']
+        candle_2_close = self.candle(df, rewind=-2)["close"]
         last_close = prev_candle["close"]
         calculated_short_ma = prev_candle[self.short_indicator]
         calculated_long_ma = prev_candle[self.long_indicator]
         return [
-            candle_2_close > calculated_short_ma and candle_2_close > calculated_long_ma,
+            candle_2_close > calculated_short_ma
+            and candle_2_close > calculated_long_ma,
             last_close > calculated_short_ma and last_close > calculated_long_ma,
-            calculated_short_ma > calculated_long_ma
+            calculated_short_ma > calculated_long_ma,
         ]
 
     def alert_message(self, df):

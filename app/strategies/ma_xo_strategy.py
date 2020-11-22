@@ -26,20 +26,14 @@ class MaCrossOverStrategy(BaseStrategy):
         last_close = prev_candle["close"]
         calculated_short_ma = prev_candle[self.short_ma_indicator]
         calculated_long_ma = prev_candle[self.long_ma_indicator]
-        return [
-            last_close > calculated_short_ma,
-            last_close > calculated_long_ma
-        ]
+        return [last_close > calculated_short_ma, last_close > calculated_long_ma]
 
     def can_sell(self, df):
         prev_candle = self.candle(df)
         last_close = prev_candle["close"]
         calculated_short_ma = prev_candle[self.short_ma_indicator]
         calculated_long_ma = prev_candle[self.long_ma_indicator]
-        return [
-            last_close < calculated_short_ma,
-            last_close < calculated_long_ma
-        ]
+        return [last_close < calculated_short_ma, last_close < calculated_long_ma]
 
     def alert_message(self, df):
         prev_candle = self.candle(df)
@@ -56,6 +50,10 @@ class MaCrossOverStrategy(BaseStrategy):
         df = self.calculate_indicators()
         dt_end = dt_to - timedelta(days=1)
         return [
-            mpf.make_addplot(df[self.short_ma_indicator][dt_since:dt_end], linestyle="dashed"),
-            mpf.make_addplot(df[self.long_ma_indicator][dt_since:dt_end], linestyle="dashed")
+            mpf.make_addplot(
+                df[self.short_ma_indicator][dt_since:dt_end], linestyle="dashed"
+            ),
+            mpf.make_addplot(
+                df[self.long_ma_indicator][dt_since:dt_end], linestyle="dashed"
+            ),
         ]

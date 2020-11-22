@@ -1,9 +1,12 @@
 import logging
 from threading import Thread
 
+import pandas as pd
+
+from app.common import wrap
 from app.config import ALERTS_CHANNEL
 from app.config.basecontainer import BaseContainer
-from app.models import SignalAlert, alerts_df_from_database
+from app.models import SignalAlert
 
 
 class AlertDataStore(Thread, BaseContainer):
@@ -20,7 +23,10 @@ class AlertDataStore(Thread, BaseContainer):
         SignalAlert.delete().execute()
 
     def fetch_data(self):
-        return alerts_df_from_database()
+        query = SignalAlert.select()
+        df = pd.DataFrame(list(query.dicts()))
+        df["date"] = pd.to_datetime(df["timestamp"], unit="ns")
+        return wrap(df)
 
     def save_alert(self, event):
         logging.info("Saving Alert: {}".format(event))

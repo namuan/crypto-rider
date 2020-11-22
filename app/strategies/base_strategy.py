@@ -4,7 +4,7 @@ from pandas import DataFrame
 
 from app.config import ALERTS_CHANNEL
 from app.config.basecontainer import BaseContainer
-from app.models import market_data, SignalAlert
+from app.models import SignalAlert
 
 
 class BaseStrategy(BaseContainer):
@@ -36,13 +36,15 @@ class BaseStrategy(BaseContainer):
     def find_last_alert_of(self, market):
         return (
             SignalAlert.select()
-                .where(SignalAlert.market == market)
-                .order_by(SignalAlert.timestamp.desc())
-                .first()
+            .where(SignalAlert.market == market)
+            .order_by(SignalAlert.timestamp.desc())
+            .first()
         )
 
     def load_df(self, limit=200):
-        return market_data(self.market, self.ts_at_run, limit)
+        return self.lookup_object("market_data_store").fetch_data_from(
+            self.market, self.ts_at_run, limit
+        )
 
     def is_new_alert_of_type(self, alert_type):
         last_alert = self.find_last_alert_of(self.market)

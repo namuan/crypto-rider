@@ -1,10 +1,13 @@
 import logging
+from datetime import datetime
 from threading import Thread
 
-from app.common import b2s, json_from_bytes, candle_event_name
+import pandas as pd
+
+from app.common import b2s, json_from_bytes, candle_event_name, wrap
 from app.config import provider_exchange, provider_candle_timeframe
 from app.config.basecontainer import BaseContainer
-from app.models import CandleStick, market_data_between
+from app.models import CandleStick
 
 
 class MarketDataStore(Thread, BaseContainer):
@@ -18,8 +21,39 @@ class MarketDataStore(Thread, BaseContainer):
         self.pubsub = redis_instance.pubsub()
         self.pubsub.subscribe(self.channels)
 
-    def fetch_data(self, market, dt_from, dt_to):
-        return market_data_between(market, dt_from.timestamp() * 1000, dt_to.timestamp() * 1000)
+    def fetch_data_between(self, market, dt_from, dt_to):
+        ts_from = dt_from.timestamp() * 1000
+        ts_to = dt_to.timestamp() * 1000
+
+        logging.info(
+            "Getting entries for market {} from database from {} => {}".format(
+                market, ts_from, ts_to
+            )
+        )
+        query = CandleStick.select().where(
+            CandleStick.market == market,
+            CandleStick.timestamp >= ts_from,
+            CandleStick.timestamp <= ts_to,
+        )
+        df = pd.DataFrame(list(query.dicts()))
+        df["date"] = pd.to_datetime(df["timestamp"], unit="ms")
+        return wrap(df)
+
+    def fetch_data_from(self, market, ts, limit):
+        logging.info(
+            "Getting last {} entries for market {} from database from {} => {}".format(
+                limit, market, ts, datetime.fromtimestamp(ts / 1000)
+            )
+        )
+        query = (
+            CandleStick.select()
+            .where(CandleStick.market == market, CandleStick.timestamp <= ts)
+            .order_by(CandleStick.timestamp.desc())
+            .limit(limit)
+        )
+        df = pd.DataFrame(list(query.dicts()))
+        df["date"] = pd.to_datetime(df["timestamp"], unit="ms")
+        return wrap(df)
 
     def run(self):
         for item in self.pubsub.listen():

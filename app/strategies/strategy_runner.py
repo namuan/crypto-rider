@@ -45,7 +45,10 @@ class StrategyRunner(BaseContainer):
         self.scheduler.enter(self.delay, 1, self.run_strategies)
 
     def run_back_test(self, market, str_since, str_to, provided_strategy):
-        selected_strategy = next((s for s in self.all_strategies if type(s).__name__ == provided_strategy), None)
+        selected_strategy = next(
+            (s for s in self.all_strategies if type(s).__name__ == provided_strategy),
+            None,
+        )
         if not selected_strategy:
             logging.warning("Unable to find strategy {}".format(provided_strategy))
             return
@@ -64,15 +67,20 @@ class StrategyRunner(BaseContainer):
         bt_range = pd.date_range(start=str_since, end=str_to)
         for dt_in_range in bt_range:
             logging.info("~~ On {}".format(dt_in_range))
-            self.process_market_strategy(market, selected_strategy, ts_start=dt_in_range.timestamp())
+            self.process_market_strategy(
+                market, selected_strategy, ts_start=dt_in_range.timestamp()
+            )
 
         self.lookup_object("order_data_store").force_close(market, dt_since, dt_to)
         self.lookup_object("report_publisher").generate_report(market, dt_since, dt_to)
 
         # Plot chart
-        additional_plots = selected_strategy.get_additional_plots(market, dt_since, dt_to)
-        self.lookup_object("report_publisher").plot_chart(market, dt_since, dt_to, additional_plots)
-
+        additional_plots = selected_strategy.get_additional_plots(
+            market, dt_since, dt_to
+        )
+        self.lookup_object("report_publisher").plot_chart(
+            market, dt_since, dt_to, additional_plots
+        )
 
     def process_market_strategy(self, market, strategy, ts_start=int(time())):
         alert_message, alert_type = strategy.run(market, ts_start * 1000)

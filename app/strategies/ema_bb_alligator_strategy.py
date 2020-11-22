@@ -15,8 +15,8 @@ class EMABBAlligatorStrategy(BaseStrategy):
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
         reshaped_df = reshape_data(df, timedelta="1d")
-        _ = reshaped_df['close_3_ema']
-        _ = reshaped_df['boll']
+        _ = reshaped_df["close_3_ema"]
+        _ = reshaped_df["boll"]
         ao = ta.momentum.AwesomeOscillatorIndicator(
             high=reshaped_df["high"], low=reshaped_df["low"]
         )
@@ -29,8 +29,9 @@ class EMABBAlligatorStrategy(BaseStrategy):
         last_bb = prev_candle["boll"]
         return [
             last_ema < last_bb,
-            (self.candle(df, rewind=-2)["AO"] > 0) & (self.candle(df, rewind=-1)["AO"] < 0),
-            prev_candle["volume"] > 0
+            (self.candle(df, rewind=-2)["AO"] > 0)
+            & (self.candle(df, rewind=-1)["AO"] < 0),
+            prev_candle["volume"] > 0,
         ]
 
     def can_buy(self, df):
@@ -39,8 +40,9 @@ class EMABBAlligatorStrategy(BaseStrategy):
         last_bb = prev_candle["boll"]
         return [
             last_ema > last_bb,
-            (self.candle(df, rewind=-2)["AO"] < 0) & (self.candle(df, rewind=-1)["AO"] > 0),
-            prev_candle["volume"] > 0
+            (self.candle(df, rewind=-2)["AO"] < 0)
+            & (self.candle(df, rewind=-1)["AO"] > 0),
+            prev_candle["volume"] > 0,
         ]
 
     def alert_message(self, df):
