@@ -27,7 +27,7 @@ class OrderDataStore(Thread, BaseContainer):
             logging.info("No existing trade found. Saving new order: {}".format(event))
             self._save_new_order(event)
         elif (
-            trade_order and not trade_order.is_open and event.get("alert_type") == "BUY"
+                trade_order and not trade_order.is_open and event.get("alert_type") == "BUY"
         ):
             logging.info(
                 "Existing closed trade found and alert type is BUY. Saving new order: {}".format(
@@ -35,7 +35,8 @@ class OrderDataStore(Thread, BaseContainer):
                 )
             )
             self._save_new_order(event)
-        elif trade_order and trade_order.is_open and event.get("alert_type") == "SELL":
+        elif trade_order and trade_order.is_open and event.get(
+                "alert_type") == "SELL" and self.is_selling_with_same_strategy(trade_order, event):
             logging.info(
                 "Existing open trade found and alert type is SELL. Saving new order: {}".format(
                     event
@@ -46,6 +47,18 @@ class OrderDataStore(Thread, BaseContainer):
             logging.info(
                 "Ignoring Trade Order: {}, Last Trade: {}".format(event, trade_order)
             )
+
+    def is_selling_with_same_strategy(self, open_order, new_event):
+        last_open_order_strategy = open_order.strategy
+        current_strategy = new_event.get("strategy")
+        if last_open_order_strategy == current_strategy:
+            return True
+        else:
+            logging.info("Ignoring SELL alert as open order strategy {} doesn't match with current strategy {}".format(
+                last_open_order_strategy,
+                current_strategy
+            ))
+            return False
 
     def fetch_data(self):
         query = TradeOrder.select()
@@ -88,7 +101,7 @@ class OrderDataStore(Thread, BaseContainer):
         logging.info("Getting last trade order for market: {}".format(market))
         return (
             TradeOrder.select()
-            .where(TradeOrder.market == market)
-            .order_by(TradeOrder.buy_timestamp.desc())
-            .first()
+                .where(TradeOrder.market == market)
+                .order_by(TradeOrder.buy_timestamp.desc())
+                .first()
         )
