@@ -1,4 +1,5 @@
 import logging
+from time import time
 
 from pandas import DataFrame
 
@@ -13,7 +14,7 @@ class BaseStrategy(BaseContainer):
     last_candle = None
 
     def run(self, market, ts_at_run):
-        self.ts_at_run = ts_at_run
+        self.ts_at_run = ts_at_run or int(time() * 1000)
         self.market = market
         alert_message, alert_type = None, None
         df = self.calculate_indicators()

@@ -72,7 +72,7 @@ class StrategyRunner(BaseContainer):
             for dt_in_range in bt_range:
                 logging.info("~~ On {}".format(dt_in_range))
                 self.process_market_strategy(
-                    market, strategy, ts_start=dt_in_range.timestamp()
+                    market, strategy, ts_start=dt_in_range.timestamp() * 1000
                 )
 
             self.lookup_object("order_data_store").force_close(market, strat_name, dt_since, dt_to)
@@ -87,7 +87,7 @@ class StrategyRunner(BaseContainer):
 
         self.lookup_object("report_publisher").generate_report(market, dt_since, dt_to)
 
-    def process_market_strategy(self, market, strategy, ts_start=int(time())):
-        alert_message, alert_type = strategy.run(market, ts_start * 1000)
+    def process_market_strategy(self, market, strategy, ts_start=None):
+        alert_message, alert_type = strategy.run(market, ts_start)
         if alert_message and alert_type:
             strategy.alert(alert_message, alert_type)

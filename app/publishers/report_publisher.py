@@ -76,13 +76,12 @@ class ReportPublisher(BaseContainer):
             buy_and_hold_profit_loss,
             buy_hold_pct_change,
         ) = self._buy_and_hold_change(market_data_df)
-        total_profit_loss = (
-            order_data_df["sell_price"] - order_data_df["buy_price"]
-        ).sum()
-        total_profit_loss_pct = (
-            (order_data_df["sell_price"] - order_data_df["buy_price"])
-            / order_data_df["buy_price"]
-        ).sum() * 100
+        order_data_df["pnl"] = order_data_df["sell_price"] - order_data_df["buy_price"]
+        total_profit_loss = order_data_df["pnl"].sum()
+        total_profit_loss_pct = (order_data_df["pnl"] / order_data_df["buy_price"]).sum() * 100
+        order_data_df["pnl_cumsum"] = order_data_df["pnl"].cummax()
+        order_data_df["highval"] = order_data_df["pnl_cumsum"].cummax()
+        order_data_df["drawdown"] = order_data_df["pnl_cumsum"] - order_data_df["highval"]
         return [
             ["Metric", "Value"],
             ["Market", market],
@@ -95,6 +94,7 @@ class ReportPublisher(BaseContainer):
                 "Total P/L (%)",
                 "{:.2f} ({:.2f} %) ".format(total_profit_loss, total_profit_loss_pct),
             ],
+            ["Worst Drawdown", "{:.2f}".format(order_data_df["drawdown"].min())],
             [
                 "Buy and Hold P/L (%)",
                 "{:.2f} ({:.2f} %)".format(
