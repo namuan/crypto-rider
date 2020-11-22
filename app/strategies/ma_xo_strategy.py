@@ -16,7 +16,7 @@ class MaCrossOverStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)  # 6H * 300
-        reshaped_df = reshape_data(df, timedelta="1d")
+        reshaped_df = reshape_data(df, timedelta="4h")
         _ = reshaped_df[self.short_ma_indicator]
         _ = reshaped_df[self.long_ma_indicator]
         return reshaped_df

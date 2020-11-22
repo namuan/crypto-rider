@@ -3,6 +3,7 @@ import logging
 import sched
 from datetime import datetime
 import ccxt
+from time import sleep
 
 from app.common import candle_event_name
 from app.config import (
@@ -13,7 +14,7 @@ from app.config import (
 )
 from app.config.basecontainer import BaseContainer
 from app.models import CandleStick
-
+import pandas as pd
 
 def exchange_factory(exchange_id):
     exchange_clazz = getattr(ccxt, exchange_id)
@@ -65,23 +66,31 @@ class MarketDataProvider(BaseContainer):
             )
         )
 
-    def download_historical_data(self, market, since):
-        ts = datetime.strptime(since, "%Y-%m-%d")
+    def download_historical_data(self, market, str_since):
+        dt_since = datetime.strptime(str_since, "%Y-%m-%d")
+        dt_to = datetime.now()
+        str_to = dt_to.strftime("%Y-%m-%d")
+
         logging.info(
-            "Downloading historical data for {} from exchange {} since {}".format(
-                market, self.exchange_id, ts
+            "Downloading historical data for {} from exchange {} from {} to {}".format(
+                market, self.exchange_id, dt_since, dt_to
             )
         )
-        candle_data_items = self.exchange.fetch_ohlcv(
-            market, "1d", since=ts.timestamp() * 1000
-        )
-        for candle_data in candle_data_items:
-            data = CandleStick.event(self.exchange_id, market, *candle_data)
-            self.lookup_object("redis_publisher").publish_data(
-                candle_event_name(self.exchange_id, self.timeframe), data
+
+        bt_range = pd.date_range(start=str_since, end=str_to)
+        for dt_in_range in bt_range:
+            candle_data_items = self.exchange.fetch_ohlcv(
+                market, "1h", since=dt_in_range.timestamp() * 1000, limit=24
             )
-        logging.info(
-            "Finished loading historical market data. Total {}".format(
-                len(candle_data_items)
+            for candle_data in candle_data_items:
+                data = CandleStick.event(self.exchange_id, market, *candle_data)
+                self.lookup_object("redis_publisher").publish_data(
+                    candle_event_name(self.exchange_id, self.timeframe), data
+                )
+            logging.info(
+                "Finished loading historical market data. Total {}".format(
+                    len(candle_data_items)
+                )
             )
-        )
+            sleep(0.5)
+

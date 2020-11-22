@@ -14,7 +14,7 @@ class EMABBAlligatorStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="1d")
+        reshaped_df = reshape_data(df, timedelta="4h")
         _ = reshaped_df["close_3_ema"]
         _ = reshaped_df["boll"]
         ao = ta.momentum.AwesomeOscillatorIndicator(

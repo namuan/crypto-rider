@@ -4,7 +4,7 @@ from threading import Thread
 
 import pandas as pd
 
-from app.common import b2s, json_from_bytes, candle_event_name, wrap
+from app.common import candle_event_name, wrap
 from app.config import provider_exchange, provider_candle_timeframe
 from app.config.basecontainer import BaseContainer
 from app.models import CandleStick
@@ -14,6 +14,7 @@ class MarketDataStore(Thread, BaseContainer):
     def __init__(self, locator):
         Thread.__init__(self)
         BaseContainer.__init__(self, locator)
+        self.daemon = True
         redis_instance = self.lookup_service("redis")
         exchange_id = provider_exchange()
         timeframe = provider_candle_timeframe()
@@ -47,24 +48,14 @@ class MarketDataStore(Thread, BaseContainer):
         )
         query = (
             CandleStick.select()
-            .where(CandleStick.market == market, CandleStick.timestamp <= ts)
-            .order_by(CandleStick.timestamp.desc())
-            .limit(limit)
+                .where(CandleStick.market == market, CandleStick.timestamp <= ts)
+                .order_by(CandleStick.timestamp.desc())
+                .limit(limit)
         )
         df = pd.DataFrame(list(query.dicts()))
         df["date"] = pd.to_datetime(df["timestamp"], unit="ms")
         return wrap(df)
 
     def run(self):
-        for item in self.pubsub.listen():
-            try:
-                if self._can_handle(item):
-                    event = json_from_bytes(item.get("data"))
-                    CandleStick.save_from(event)
-            except Exception as e:
-                logging.error(e)
-
-    def _can_handle(self, item):
-        return (
-            item.get("type") == "message" and b2s(item.get("channel")) in self.channels
-        )
+        for event in self.pull_event():
+            CandleStick.save_from(event)

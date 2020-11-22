@@ -9,11 +9,11 @@ class RsiZoneStrategy(BaseStrategy):
     rsi_indicator = "rsi_{}".format(rsi)
     rsi_buy_limit = 25
     rsi_sell_limit = 55
-    trend_indicator = "close_100_sma"
+    trend_indicator = "close_200_sma"
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="1d")
+        reshaped_df = reshape_data(df, timedelta="4h")
         _ = reshaped_df[self.rsi_indicator]
         _ = reshaped_df[self.trend_indicator]
         return reshaped_df

@@ -29,6 +29,7 @@ class ReportPublisher(BaseContainer):
             market, dt_from, dt_to
         )
         order_data_df = self.lookup_object("order_data_store").fetch_data_with_strategy(strategy)
+        additional_plots = []
         if not order_data_df.empty:
             market_data_df["buy"] = np.where(
                 market_data_df.timestamp.isin(order_data_df.buy_timestamp),
