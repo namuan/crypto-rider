@@ -1,26 +1,30 @@
+from app.common import reshape_data
 from app.strategies.base_strategy import BaseStrategy
 
 
 class SimpleStrategy(BaseStrategy):
-    def apply(self):
-        df = self.load_df(limit=300)
-        signal = self.calculate_signal(df)
-        if signal:
-            self.alert(
-                "Higher Close(Prev {}, Current {})".format(
-                    self.prev_close(df), self.close(df)
-                ),
-                "higher_close",
-            )
 
-    def calculate_signal(self, df):
-        if self.prev_close(df) < self.close(df):
-            return True
-        else:
-            return False
+    def calculate_indicators(self):
+        df = self.load_df(limit=1000)
+        reshaped_df = reshape_data(df, timedelta="1d")
+        return reshaped_df
 
-    def close(self, df):
-        return self.candle(df)["close"]
+    def can_sell(self, df):
+        candle = self.candle(df)
+        prev_candle = self.candle(df, rewind=-2)
+        return prev_candle["close"] > candle["close"]
 
-    def prev_close(self, df):
-        return self.candle(df, rewind=1)["close"]
+    def can_buy(self, df):
+        candle = self.candle(df)
+        prev_candle = self.candle(df, rewind=-2)
+        return candle["close"] > prev_candle["close"]
+
+    def alert_message(self, df):
+        candle = self.candle(df)
+        prev_candle = self.candle(df, rewind=-2)
+        return "Close(Prev {}, Current {})".format(
+            prev_candle["close"], candle["close"]
+        )
+
+    def get_additional_plots(self, market, dt_since, dt_to):
+        return []

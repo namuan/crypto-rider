@@ -9,8 +9,6 @@ pd.set_option("display.width", None)
 
 
 class MaCrossOverStrategy(BaseStrategy):
-    CLOSE_BELOW_MA_SIGNAL = "close-below-ma"
-    CLOSE_ABOVE_MA_SIGNAL = "close-above-ma"
     short_ma = 20
     long_ma = 50
     short_ma_indicator = "close_{}_sma".format(short_ma)
