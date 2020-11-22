@@ -24,7 +24,7 @@ class ReportPublisher(BaseContainer):
         market_data_df = self.lookup_object("market_data_store").fetch_data(market, dt_from, dt_to)
         order_data_df = self.lookup_object("order_data_store").fetch_data()
         market_data_df['buy'] = np.where(market_data_df.timestamp.isin(order_data_df.buy_timestamp), market_data_df.close * 1.01, np.nan)
-        additional_plots = []
+        # additional_plots = []
         additional_plots.append(mpf.make_addplot(market_data_df.buy, type='scatter', color='g', markersize=50, marker='^'))
 
         market_data_df['sell'] = np.where(market_data_df.timestamp.isin(order_data_df.sell_timestamp), market_data_df.close * 1.01, np.nan)

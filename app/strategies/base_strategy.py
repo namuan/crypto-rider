@@ -17,10 +17,10 @@ class BaseStrategy(BaseContainer):
         self.market = market
         alert_message, alert_type = None, None
         df = self.calculate_indicators()
-        if self.can_buy(df):
+        if self.evaluate_conditions(self.can_buy(df)):
             message = self.alert_message(df)
             alert_message, alert_type = message, "BUY"
-        elif self.can_sell(df):
+        elif self.evaluate_conditions(self.can_sell(df)):
             message = self.alert_message(df)
             alert_message, alert_type = message, "SELL"
         else:
@@ -79,3 +79,6 @@ class BaseStrategy(BaseContainer):
 
     def get_additional_plots(self, market, dt_since, dt_to):
         return []
+
+    def evaluate_conditions(self, conditions):
+        return all(conditions)

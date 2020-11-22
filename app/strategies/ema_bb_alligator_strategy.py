@@ -27,21 +27,21 @@ class EMABBAlligatorStrategy(BaseStrategy):
         prev_candle = self.candle(df)
         last_ema = prev_candle["close_3_ema"]
         last_bb = prev_candle["boll"]
-        ema_xb_bb_mavg = last_ema < last_bb
-        ao_xb_zero = (self.candle(df, rewind=-2)["AO"] > 0) & (self.candle(df, rewind=-1)["AO"] < 0)
-        vol_above_zero = prev_candle["volume"] > 0
-        result = ema_xb_bb_mavg and ao_xb_zero and vol_above_zero
-        return result
+        return [
+            last_ema < last_bb,
+            (self.candle(df, rewind=-2)["AO"] > 0) & (self.candle(df, rewind=-1)["AO"] < 0),
+            prev_candle["volume"] > 0
+        ]
 
     def can_buy(self, df):
         prev_candle = self.candle(df)
         last_ema = prev_candle["close_3_ema"]
         last_bb = prev_candle["boll"]
-        ema_xa_bb_mavg = last_ema > last_bb
-        ao_xo_zero = (self.candle(df, rewind=-2)["AO"] < 0) & (self.candle(df, rewind=-1)["AO"] > 0)
-        vol_above_zero = prev_candle["volume"] > 0
-        result = ema_xa_bb_mavg and ao_xo_zero and vol_above_zero
-        return result
+        return [
+            last_ema > last_bb,
+            (self.candle(df, rewind=-2)["AO"] < 0) & (self.candle(df, rewind=-1)["AO"] > 0),
+            prev_candle["volume"] > 0
+        ]
 
     def alert_message(self, df):
         prev_candle = self.candle(df)

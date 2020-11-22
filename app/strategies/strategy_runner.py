@@ -13,6 +13,7 @@ from app.config.basecontainer import BaseContainer
 from app.strategies.close_x_ema_strategy import CloseCrossEmaStrategy
 from app.strategies.ema_bb_alligator_strategy import EMABBAlligatorStrategy
 from app.strategies.ma_xo_strategy import MaCrossOverStrategy
+from app.strategies.rsi_zone_strategy import RsiZoneStrategy
 from app.strategies.simple_strategy import SimpleStrategy
 
 
@@ -25,6 +26,7 @@ class StrategyRunner(BaseContainer):
         BaseContainer.__init__(self, locator)
         self.all_strategies = [
             SimpleStrategy(locator),
+            RsiZoneStrategy(locator),
             CloseCrossEmaStrategy(locator),
             MaCrossOverStrategy(locator),
             EMABBAlligatorStrategy(locator),

@@ -12,12 +12,16 @@ class SimpleStrategy(BaseStrategy):
     def can_sell(self, df):
         candle = self.candle(df)
         prev_candle = self.candle(df, rewind=-2)
-        return prev_candle["close"] > candle["close"]
+        return [
+            prev_candle["close"] > candle["close"]
+        ]
 
     def can_buy(self, df):
         candle = self.candle(df)
         prev_candle = self.candle(df, rewind=-2)
-        return candle["close"] > prev_candle["close"]
+        return [
+            candle["close"] > prev_candle["close"]
+        ]
 
     def alert_message(self, df):
         candle = self.candle(df)
