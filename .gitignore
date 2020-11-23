@@ -130,3 +130,6 @@ dmypy.json
 
 # Intellij
 .idea/
+
+# Temp files
+output/

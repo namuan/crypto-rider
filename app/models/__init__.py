@@ -1,11 +1,8 @@
-import logging
 import os
-from datetime import datetime
 
-import pandas as pd
 from peewee import *
 
-from app.common import uuid_gen, wrap
+from app.common import uuid_gen
 
 home_dir = os.getenv("HOME")
 db = SqliteDatabase(home_dir + "/crypto_rider_candles.db")
@@ -101,11 +98,11 @@ class TradeOrder(Model):
     ):
         return dict(
             strategy=strategy,
-            buy_timestamp=buy_timestamp,
-            sell_timestamp=sell_timestamp,
+            buy_timestamp=float(buy_timestamp),
+            sell_timestamp=float(sell_timestamp),
             market=market,
-            buy_price=buy_price,
-            sell_price=sell_price,
+            buy_price=float(buy_price),
+            sell_price=float(sell_price),
             is_open=is_open,
             sell_reason=sell_reason,
         )

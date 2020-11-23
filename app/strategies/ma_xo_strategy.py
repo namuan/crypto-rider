@@ -9,14 +9,17 @@ pd.set_option("display.width", None)
 
 
 class MaCrossOverStrategy(BaseStrategy):
-    short_ma = 20
-    long_ma = 50
-    short_ma_indicator = "close_{}_sma".format(short_ma)
-    long_ma_indicator = "close_{}_sma".format(long_ma)
+
+    def __init__(self, locator, params=dict()):
+        BaseStrategy.__init__(self, locator)
+        self.short_ma = params.get("short_ma") or 20
+        self.long_ma = params.get("long_ma") or 50
+        self.short_ma_indicator = "close_{}_sma".format(self.short_ma)
+        self.long_ma_indicator = "close_{}_sma".format(self.long_ma)
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)  # 6H * 300
-        reshaped_df = reshape_data(df, timedelta="4h")
+        reshaped_df = reshape_data(df, timedelta="1d")
         _ = reshaped_df[self.short_ma_indicator]
         _ = reshaped_df[self.long_ma_indicator]
         return reshaped_df
