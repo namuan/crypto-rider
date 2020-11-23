@@ -48,9 +48,9 @@ class MarketDataStore(Thread, BaseContainer):
         )
         query = (
             CandleStick.select()
-                .where(CandleStick.market == market, CandleStick.timestamp <= ts)
-                .order_by(CandleStick.timestamp.desc())
-                .limit(limit)
+            .where(CandleStick.market == market, CandleStick.timestamp <= ts)
+            .order_by(CandleStick.timestamp.desc())
+            .limit(limit)
         )
         df = pd.DataFrame(list(query.dicts()))
         df["date"] = pd.to_datetime(df["timestamp"], unit="ms")

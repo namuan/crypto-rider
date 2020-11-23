@@ -11,7 +11,6 @@ pd.set_option("display.width", None)
 
 
 class SimpleMovingAverageCrossTrendStrategy(BaseStrategy):
-
     def __init__(self, locator, params=dict()):
         BaseStrategy.__init__(self, locator)
         self.trend_ma = params.get("trend_ma") or 300
@@ -39,10 +38,7 @@ class SimpleMovingAverageCrossTrendStrategy(BaseStrategy):
         prev_candle = self.candle(df)
         last_close = prev_candle["close"]
         calculated_trend_ma = prev_candle[self.trend_ma_indicator]
-        return "Close {:.2f} - Trend SMA {:.2f}".format(
-            last_close,
-            calculated_trend_ma
-        )
+        return "Close {:.2f} - Trend SMA {:.2f}".format(last_close, calculated_trend_ma)
 
     def get_additional_plots(self, market, dt_since, dt_to):
         df = self.calculate_indicators()

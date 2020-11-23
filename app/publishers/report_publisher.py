@@ -28,7 +28,9 @@ class ReportPublisher(BaseContainer):
         market_data_df = self.lookup_object("market_data_store").fetch_data_between(
             market, dt_from, dt_to
         )
-        order_data_df = self.lookup_object("order_data_store").fetch_data_with_strategy(strategy)
+        order_data_df = self.lookup_object("order_data_store").fetch_data_with_strategy(
+            strategy
+        )
         additional_plots = []
         if not order_data_df.empty:
             market_data_df["buy"] = np.where(
@@ -38,7 +40,11 @@ class ReportPublisher(BaseContainer):
             )
             additional_plots.append(
                 mpf.make_addplot(
-                    market_data_df.buy, type="scatter", color="g", markersize=50, marker="^"
+                    market_data_df.buy,
+                    type="scatter",
+                    color="g",
+                    markersize=50,
+                    marker="^",
                 )
             )
 
@@ -78,10 +84,14 @@ class ReportPublisher(BaseContainer):
         ) = self._buy_and_hold_change(market_data_df)
         order_data_df["pnl"] = order_data_df["sell_price"] - order_data_df["buy_price"]
         total_profit_loss = order_data_df["pnl"].sum()
-        total_profit_loss_pct = (order_data_df["pnl"] / order_data_df["buy_price"]).sum() * 100
+        total_profit_loss_pct = (
+            order_data_df["pnl"] / order_data_df["buy_price"]
+        ).sum() * 100
         order_data_df["pnl_cumsum"] = order_data_df["pnl"].cumsum()
         order_data_df["highval"] = order_data_df["pnl_cumsum"].cummax()
-        order_data_df["drawdown"] = order_data_df["pnl_cumsum"] - order_data_df["highval"]
+        order_data_df["drawdown"] = (
+            order_data_df["pnl_cumsum"] - order_data_df["highval"]
+        )
         return [
             ["Metric", "Value"],
             ["Market", market],

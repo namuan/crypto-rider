@@ -5,7 +5,6 @@ import mplfinance as mpf
 
 
 class RsiZoneStrategy(BaseStrategy):
-
     def __init__(self, locator, params=dict()):
         BaseStrategy.__init__(self, locator)
         self.rsi = params.get("rsi") or 4

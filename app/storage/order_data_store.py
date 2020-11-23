@@ -27,7 +27,7 @@ class OrderDataStore(Thread, BaseContainer):
             logging.info("No existing trade found. Saving new order: {}".format(event))
             self._save_new_order(event)
         elif (
-                trade_order and not trade_order.is_open and event.get("alert_type") == "BUY"
+            trade_order and not trade_order.is_open and event.get("alert_type") == "BUY"
         ):
             logging.info(
                 "Existing closed trade found and alert type is BUY. Saving new order: {}".format(
@@ -35,8 +35,12 @@ class OrderDataStore(Thread, BaseContainer):
                 )
             )
             self._save_new_order(event)
-        elif trade_order and trade_order.is_open and event.get(
-                "alert_type") == "SELL" and self.is_selling_with_same_strategy(trade_order, event):
+        elif (
+            trade_order
+            and trade_order.is_open
+            and event.get("alert_type") == "SELL"
+            and self.is_selling_with_same_strategy(trade_order, event)
+        ):
             logging.info(
                 "Existing open trade found and alert type is SELL. Saving new order: {}".format(
                     event
@@ -54,10 +58,11 @@ class OrderDataStore(Thread, BaseContainer):
         if last_open_order_strategy == current_strategy:
             return True
         else:
-            logging.info("Ignoring SELL alert as open order strategy {} doesn't match with current strategy {}".format(
-                last_open_order_strategy,
-                current_strategy
-            ))
+            logging.info(
+                "Ignoring SELL alert as open order strategy {} doesn't match with current strategy {}".format(
+                    last_open_order_strategy, current_strategy
+                )
+            )
             return False
 
     def fetch_data(self):
@@ -65,18 +70,14 @@ class OrderDataStore(Thread, BaseContainer):
         return pd.DataFrame(list(query.dicts()))
 
     def fetch_data_with_strategy(self, strategy):
-        query = TradeOrder.select().where(
-            TradeOrder.strategy == strategy
-        )
+        query = TradeOrder.select().where(TradeOrder.strategy == strategy)
         return pd.DataFrame(list(query.dicts()))
 
     def force_close(self, market, strategy, dt_since, dt_to):
         trade_order = self.last_trade_order(market, strategy)
-        logging.info("Force close order for {}/{} => {}".format(
-            market,
-            strategy,
-            trade_order
-        ))
+        logging.info(
+            "Force close order for {}/{} => {}".format(market, strategy, trade_order)
+        )
         if trade_order and trade_order.is_open:
             market_data_df = self.lookup_object("market_data_store").fetch_data_between(
                 market, dt_since, dt_to
@@ -90,7 +91,9 @@ class OrderDataStore(Thread, BaseContainer):
             trade_order.is_open = False
             trade_order.save()
 
-            self.lookup_object("redis_publisher").publish_data(ORDERS_CHANNEL, trade_order.to_event())
+            self.lookup_object("redis_publisher").publish_data(
+                ORDERS_CHANNEL, trade_order.to_event()
+            )
 
     def _save_new_order(self, event):
         order_event = dict(
@@ -103,7 +106,6 @@ class OrderDataStore(Thread, BaseContainer):
         self.lookup_object("redis_publisher").publish_data(ORDERS_CHANNEL, order_event)
         TradeOrder.save_from(order_event)
 
-
     def _close_existing_order(self, trade_order, event):
         trade_order.sell_timestamp = event.get("timestamp")
         trade_order.sell_price = event.get("close_price")
@@ -111,13 +113,17 @@ class OrderDataStore(Thread, BaseContainer):
         trade_order.is_open = False
         trade_order.save()
 
-        self.lookup_object("redis_publisher").publish_data(ORDERS_CHANNEL, trade_order.to_event())
+        self.lookup_object("redis_publisher").publish_data(
+            ORDERS_CHANNEL, trade_order.to_event()
+        )
 
     def last_trade_order(self, market, strategy) -> TradeOrder:
-        logging.info("Last trade order for market {}, strategy {}".format(market, strategy))
+        logging.info(
+            "Last trade order for market {}, strategy {}".format(market, strategy)
+        )
         return (
             TradeOrder.select()
-                .where(TradeOrder.market == market, TradeOrder.strategy == strategy)
-                .order_by(TradeOrder.buy_timestamp.desc())
-                .first()
+            .where(TradeOrder.market == market, TradeOrder.strategy == strategy)
+            .order_by(TradeOrder.buy_timestamp.desc())
+            .first()
         )

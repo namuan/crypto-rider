@@ -15,6 +15,7 @@ from app.strategies.ema_bb_alligator_strategy import EMABBAlligatorStrategy
 from app.strategies.ma_xo_strategy import MaCrossOverStrategy
 from app.strategies.rsi_zone_strategy import RsiZoneStrategy
 from app.strategies.simple_strategy import SimpleStrategy
+from app.strategies.sma_x_trend_strategy import SimpleMovingAverageCrossTrendStrategy
 
 
 class StrategyRunner(BaseContainer):
@@ -25,11 +26,11 @@ class StrategyRunner(BaseContainer):
     def __init__(self, locator):
         BaseContainer.__init__(self, locator)
         self.all_strategies = [
-            # SimpleStrategy(locator),
             RsiZoneStrategy(locator),
-            # CloseCrossEmaStrategy(locator),
+            CloseCrossEmaStrategy(locator),
             MaCrossOverStrategy(locator),
-            # EMABBAlligatorStrategy(locator),
+            SimpleMovingAverageCrossTrendStrategy(locator),
+            EMABBAlligatorStrategy(locator),
         ]
 
     def start(self):
@@ -52,7 +53,9 @@ class StrategyRunner(BaseContainer):
             if s.strategy_name() in provided_strategies
         }
         if not selected_strategies:
-            logging.warning("Unable to find any matching strategy {}".format(provided_strategies))
+            logging.warning(
+                "Unable to find any matching strategy {}".format(provided_strategies)
+            )
             return
 
         self.lookup_object("alert_data_store").clear_data()
@@ -75,12 +78,12 @@ class StrategyRunner(BaseContainer):
                     market, strategy, ts_start=dt_in_range.timestamp() * 1000
                 )
 
-            self.lookup_object("order_data_store").force_close(market, strat_name, dt_since, dt_to)
+            self.lookup_object("order_data_store").force_close(
+                market, strat_name, dt_since, dt_to
+            )
 
             # Plot chart
-            additional_plots = strategy.get_additional_plots(
-                market, dt_since, dt_to
-            )
+            additional_plots = strategy.get_additional_plots(market, dt_since, dt_to)
             self.lookup_object("report_publisher").plot_chart(
                 market, strat_name, dt_since, dt_to, additional_plots
             )

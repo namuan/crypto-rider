@@ -29,23 +29,29 @@ class PushoverNotifier(Thread, BaseContainer):
             "Content-Type": "application/x-www-form-urlencoded",
         }
         data = {
-            'token': PUSHOVER_TOKEN,
-            'user': PUSHOVER_USER,
-            'title': 'CryptoRider',
-            'message': message
+            "token": PUSHOVER_TOKEN,
+            "user": PUSHOVER_USER,
+            "title": "CryptoRider",
+            "message": message,
         }
         requests.post(url=PUSHOVER_URL, headers=headers, data=data)
 
     def construct_message(self, event):
         buy_or_sell = "Bought" if event.get("is_open") else "Sold"
-        buy_or_sell_ts = event.get("buy_timestamp") if event.get("is_open") else event.get("sell_timestamp")
-        buy_or_sell_price = event.get("buy_price") if event.get("is_open") else event.get("sell_price")
+        buy_or_sell_ts = (
+            event.get("buy_timestamp")
+            if event.get("is_open")
+            else event.get("sell_timestamp")
+        )
+        buy_or_sell_price = (
+            event.get("buy_price") if event.get("is_open") else event.get("sell_price")
+        )
         buy_or_sell_dt = datetime.fromtimestamp(int(buy_or_sell_ts) / 1000)
         return "{} {} FOR {} AT {}".format(
             buy_or_sell,
             event.get("market"),
             buy_or_sell_price,
-            buy_or_sell_dt.strftime("%Y-%m-%d %H:%M:%S")
+            buy_or_sell_dt.strftime("%Y-%m-%d %H:%M:%S"),
         )
 
     def run(self):

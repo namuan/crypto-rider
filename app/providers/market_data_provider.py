@@ -16,6 +16,7 @@ from app.config.basecontainer import BaseContainer
 from app.models import CandleStick
 import pandas as pd
 
+
 def exchange_factory(exchange_id):
     exchange_clazz = getattr(ccxt, exchange_id)
     return exchange_clazz()
@@ -93,4 +94,3 @@ class MarketDataProvider(BaseContainer):
                 )
             )
             sleep(0.5)
-

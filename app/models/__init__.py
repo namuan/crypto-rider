@@ -116,7 +116,7 @@ class TradeOrder(Model):
             self.buy_price,
             self.sell_price,
             self.is_open,
-            self.sell_reason
+            self.sell_reason,
         )
 
     @staticmethod

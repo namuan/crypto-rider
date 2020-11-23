@@ -77,7 +77,9 @@ def download_historical_data(market, since):
 @click.option("--market", help="Market", required=True)
 @click.option("--since", help="Since", required=True)
 @click.option("--to", help="To", required=True)
-@click.option("--strats", help="Strategies to backtest. eg. StrategyA,StrategyB", required=True)
+@click.option(
+    "--strats", help="Strategies to backtest. eg. StrategyA,StrategyB", required=True
+)
 def back_test(market, since, to, strats):
     alert_data_store = locator.o("alert_data_store")
     alert_data_store.start()

@@ -9,7 +9,6 @@ pd.set_option("display.width", None)
 
 
 class MaCrossOverStrategy(BaseStrategy):
-
     def __init__(self, locator, params=dict()):
         BaseStrategy.__init__(self, locator)
         self.short_ma = params.get("short_ma") or 20
