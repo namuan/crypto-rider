@@ -51,6 +51,3 @@ class CloseCrossEmaStrategy(BaseStrategy):
             calculated_short_ma,
             calculated_long_ma,
         )
-
-    def get_additional_plots(self, market, dt_since, dt_to):
-        return []

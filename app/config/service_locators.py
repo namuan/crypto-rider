@@ -1,5 +1,6 @@
 import redis
 
+from app.bank.account_manager import AccountManager
 from app.models import db
 from app.notifiers.pushover_notifier import PushoverNotifier
 from app.notifiers.telegram_notifier import TelegramNotifier
@@ -10,6 +11,8 @@ from app.storage.alert_data_store import AlertDataStore
 from app.storage.market_data_store import MarketDataStore
 from app.storage.order_data_store import OrderDataStore
 from app.strategies.strategy_runner import StrategyRunner
+from app.tradingroom.broker import Broker
+from app.tradingroom.exchange import Exchange
 
 
 class ServiceLocator:
@@ -28,6 +31,9 @@ class ServiceLocator:
             strategy_runner=StrategyRunner(self),
             report_publisher=ReportPublisher(self),
             order_data_store=OrderDataStore(self),
+            account_manager=AccountManager(self),
+            exchange=Exchange(self),
+            broker=Broker(self),
         )
 
     def o(self, service):

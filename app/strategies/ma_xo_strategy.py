@@ -18,7 +18,7 @@ class MaCrossOverStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)  # 6H * 300
-        reshaped_df = reshape_data(df, timedelta="1d")
+        reshaped_df = reshape_data(df, timedelta="4h")
         _ = reshaped_df[self.short_ma_indicator]
         _ = reshaped_df[self.long_ma_indicator]
         return reshaped_df
@@ -42,20 +42,10 @@ class MaCrossOverStrategy(BaseStrategy):
         last_close = prev_candle["close"]
         calculated_short_ma = prev_candle[self.short_ma_indicator]
         calculated_long_ma = prev_candle[self.long_ma_indicator]
-        return "Close {:.2f} - Short MA {:.2f} and Long MA {:.2f}".format(
+        return "Close {:.2f} - Short ({}) MA {:.2f} and Long ({}) MA {:.2f}".format(
             last_close,
+            self.short_ma,
             calculated_short_ma,
+            self.long_ma,
             calculated_long_ma,
         )
-
-    def get_additional_plots(self, market, dt_since, dt_to):
-        df = self.calculate_indicators()
-        dt_end = dt_to - timedelta(days=1)
-        return [
-            mpf.make_addplot(
-                df[self.short_ma_indicator][dt_since:dt_end], linestyle="dashed"
-            ),
-            mpf.make_addplot(
-                df[self.long_ma_indicator][dt_since:dt_end], linestyle="dashed"
-            ),
-        ]

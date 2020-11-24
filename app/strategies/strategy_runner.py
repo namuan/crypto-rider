@@ -10,6 +10,7 @@ from app.config import (
     provider_markets,
 )
 from app.config.basecontainer import BaseContainer
+from app.strategies.breakout_strategy import BreakoutStrategy
 from app.strategies.close_x_ema_strategy import CloseCrossEmaStrategy
 from app.strategies.ema_bb_alligator_strategy import EMABBAlligatorStrategy
 from app.strategies.ma_xo_strategy import MaCrossOverStrategy
@@ -31,10 +32,16 @@ class StrategyRunner(BaseContainer):
             MaCrossOverStrategy(locator),
             SimpleMovingAverageCrossTrendStrategy(locator),
             EMABBAlligatorStrategy(locator),
+            BreakoutStrategy(locator),
         ]
 
     def start(self):
         logging.info("Running StrategyRunner every {} seconds".format(self.delay))
+        self.lookup_object("telegram_notifier").send_message(
+            "Starting CryptoRider with strategies: {}".format(
+                [s.strategy_name() for s in self.all_strategies]
+            )
+        )
         self.scheduler.enter(self.delay, 1, self.run_strategies)
         self.scheduler.run()
 
@@ -83,9 +90,8 @@ class StrategyRunner(BaseContainer):
             )
 
             # Plot chart
-            additional_plots = strategy.get_additional_plots(market, dt_since, dt_to)
             self.lookup_object("report_publisher").plot_chart(
-                market, strat_name, dt_since, dt_to, additional_plots
+                market, strategy, dt_since, dt_to
             )
 
         self.lookup_object("report_publisher").generate_report(market, dt_since, dt_to)

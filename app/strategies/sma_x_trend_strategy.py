@@ -1,6 +1,3 @@
-from datetime import timedelta
-
-import mplfinance as mpf
 import pandas as pd
 
 from app.common import reshape_data
@@ -18,7 +15,7 @@ class SimpleMovingAverageCrossTrendStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="1w")
+        reshaped_df = reshape_data(df, timedelta="1d")
         _ = reshaped_df[self.trend_ma_indicator]
         return reshaped_df
 
@@ -39,12 +36,3 @@ class SimpleMovingAverageCrossTrendStrategy(BaseStrategy):
         last_close = prev_candle["close"]
         calculated_trend_ma = prev_candle[self.trend_ma_indicator]
         return "Close {:.2f} - Trend SMA {:.2f}".format(last_close, calculated_trend_ma)
-
-    def get_additional_plots(self, market, dt_since, dt_to):
-        df = self.calculate_indicators()
-        dt_end = dt_to - timedelta(days=1)
-        return [
-            mpf.make_addplot(
-                df[self.trend_ma_indicator][dt_since:dt_end], linestyle="dashed"
-            )
-        ]

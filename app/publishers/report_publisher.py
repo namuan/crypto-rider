@@ -1,10 +1,11 @@
+import logging
 from datetime import datetime
 
 import mplfinance as mpf
+import numpy as np
 from tabulate import tabulate
 
 from app.config.basecontainer import BaseContainer
-import numpy as np
 
 
 class ReportPublisher(BaseContainer):
@@ -24,12 +25,13 @@ class ReportPublisher(BaseContainer):
         self._print_table("Trades", self._generate_orders_list(market, order_data_df))
         self._print_table("Alerts", self._generate_alerts_list(market, alerts_df))
 
-    def plot_chart(self, market, strategy, dt_from, dt_to, additional_plots):
+    def plot_chart(self, market, strategy, dt_from, dt_to):
         market_data_df = self.lookup_object("market_data_store").fetch_data_between(
             market, dt_from, dt_to
         )
+        strategy_name = strategy.strategy_name()
         order_data_df = self.lookup_object("order_data_store").fetch_data_with_strategy(
-            strategy
+            strategy_name
         )
         additional_plots = []
         if not order_data_df.empty:
@@ -64,7 +66,7 @@ class ReportPublisher(BaseContainer):
             )
         mpf.plot(
             market_data_df,
-            title="{}".format(strategy),
+            title="{}-{}".format(market, strategy_name),
             type="line",
             volume=True,
             addplot=additional_plots,
@@ -82,6 +84,10 @@ class ReportPublisher(BaseContainer):
             buy_and_hold_profit_loss,
             buy_hold_pct_change,
         ) = self._buy_and_hold_change(market_data_df)
+        if order_data_df.empty:
+            logging.warn("No orders found")
+            return
+
         order_data_df["pnl"] = order_data_df["sell_price"] - order_data_df["buy_price"]
         total_profit_loss = order_data_df["pnl"].sum()
         total_profit_loss_pct = (

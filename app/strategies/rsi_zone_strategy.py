@@ -29,7 +29,10 @@ class RsiZoneStrategy(BaseStrategy):
 
     def can_sell(self, df):
         candle = self.candle(df)
-        return [candle[self.rsi_indicator] > self.rsi_sell_limit]
+        return [
+            candle["close"] > candle[self.trend_indicator],
+            candle[self.rsi_indicator] > self.rsi_sell_limit,
+        ]
 
     def alert_message(self, df):
         candle = self.candle(df)
@@ -39,15 +42,3 @@ class RsiZoneStrategy(BaseStrategy):
             candle[self.rsi_indicator],
             candle[self.trend_indicator],
         )
-
-    def get_additional_plots(self, market, dt_since, dt_to):
-        df = self.calculate_indicators()
-        dt_end = dt_to - timedelta(days=1)
-        return [
-            mpf.make_addplot(
-                df[self.trend_indicator][dt_since:dt_end], linestyle="dashed"
-            ),
-            mpf.make_addplot(
-                df[self.rsi_indicator][dt_since:dt_end], linestyle="dashed", panel=2
-            ),
-        ]
