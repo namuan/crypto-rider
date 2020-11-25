@@ -1,5 +1,3 @@
-import mplfinance as mpf
-
 from app.common import reshape_data
 from app.strategies.base_strategy import BaseStrategy
 
@@ -7,15 +5,16 @@ from app.strategies.base_strategy import BaseStrategy
 class BreakoutStrategy(BaseStrategy):
     def __init__(self, locator, params=dict()):
         BaseStrategy.__init__(self, locator)
-        self.max_range = params.get("max_range") or 20
-        self.ma_range = params.get("max_range") or 55
+        self.max_range = params.get("max_range") or 10
+        self.ma_range = params.get("max_range") or 50
         self.higher_high = "close_{}_max".format(self.max_range)
         self.ma_indicator = "close_{}_sma".format(self.ma_range)
         self.trend_indicator = params.get("trend_indicator") or "close_200_sma"
+        self.timeframe = params.get("timeframe") or "1h"
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="4h")
+        reshaped_df = reshape_data(df, timedelta=self.timeframe)
         reshaped_df[self.higher_high] = (
             reshaped_df["close"].shift().rolling(self.max_range).max()
         )

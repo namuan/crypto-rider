@@ -41,6 +41,6 @@ def init_logger():
         handlers=handlers,
         format="%(asctime)s - %(filename)s:%(lineno)d - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.INFO,
+        level=logging.WARNING,
     )
     logging.captureWarnings(capture=True)

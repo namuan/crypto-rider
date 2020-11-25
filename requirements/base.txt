@@ -8,3 +8,4 @@ stockstats
 ta
 tabulate
 mplfinance
+dotmap

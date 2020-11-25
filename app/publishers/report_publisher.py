@@ -9,7 +9,7 @@ from app.config.basecontainer import BaseContainer
 
 
 class ReportPublisher(BaseContainer):
-    def generate_report(self, market, dt_since, dt_to):
+    def generate_report(self, market, dt_since, dt_to, display_options):
         alerts_df = self.lookup_object("alert_data_store").fetch_data()
         market_data_df = self.lookup_object("market_data_store").fetch_data_between(
             market, dt_since, dt_to
@@ -17,13 +17,17 @@ class ReportPublisher(BaseContainer):
         order_data_df = self.lookup_object("order_data_store").fetch_data()
 
         self._print_table(
-            "CryptoRider :: Summary Report",
+            "CryptoRider :: {} Summary Report".format(market),
             self._generate_summary(
                 market, dt_since, dt_to, market_data_df, order_data_df
             ),
         )
-        self._print_table("Trades", self._generate_orders_list(market, order_data_df))
-        self._print_table("Alerts", self._generate_alerts_list(market, alerts_df))
+
+        if display_options.trades:
+            self._print_table("Trades", self._generate_orders_list(market, order_data_df))
+
+        if display_options.alerts:
+            self._print_table("Alerts", self._generate_alerts_list(market, alerts_df))
 
     def plot_chart(self, market, strategy, dt_from, dt_to):
         market_data_df = self.lookup_object("market_data_store").fetch_data_between(
@@ -85,18 +89,18 @@ class ReportPublisher(BaseContainer):
             buy_hold_pct_change,
         ) = self._buy_and_hold_change(market_data_df)
         if order_data_df.empty:
-            logging.warn("No orders found")
+            logging.warning("No orders found")
             return
 
         order_data_df["pnl"] = order_data_df["sell_price"] - order_data_df["buy_price"]
         total_profit_loss = order_data_df["pnl"].sum()
         total_profit_loss_pct = (
-            order_data_df["pnl"] / order_data_df["buy_price"]
-        ).sum() * 100
+                                        order_data_df["pnl"] / order_data_df["buy_price"]
+                                ).sum() * 100
         order_data_df["pnl_cumsum"] = order_data_df["pnl"].cumsum()
         order_data_df["highval"] = order_data_df["pnl_cumsum"].cummax()
         order_data_df["drawdown"] = (
-            order_data_df["pnl_cumsum"] - order_data_df["highval"]
+                order_data_df["pnl_cumsum"] - order_data_df["highval"]
         )
         return [
             ["Metric", "Value"],
