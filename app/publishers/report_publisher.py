@@ -9,15 +9,15 @@ from app.config.basecontainer import BaseContainer
 
 
 class ReportPublisher(BaseContainer):
-    def generate_report(self, market, dt_since, dt_to, display_options):
-        alerts_df = self.lookup_object("alert_data_store").fetch_data()
+    def generate_report(self, market, strat_name, dt_since, dt_to, display_options):
+        alerts_df = self.lookup_object("alert_data_store").fetch_data(strat_name)
         market_data_df = self.lookup_object("market_data_store").fetch_data_between(
             market, dt_since, dt_to
         )
-        order_data_df = self.lookup_object("order_data_store").fetch_data()
+        order_data_df = self.lookup_object("order_data_store").fetch_data(strat_name)
 
         self._print_table(
-            "CryptoRider :: {} Summary Report".format(market),
+            "{} -> {} Summary Report".format(market, strat_name),
             self._generate_summary(
                 market, dt_since, dt_to, market_data_df, order_data_df
             ),

@@ -52,26 +52,33 @@ class StrategyRunner(BaseContainer):
 
         self.scheduler.enter(self.delay, 1, self.run_strategies)
 
-    def run_back_test(self, market, str_since, str_to, strats, display_opts):
+    def _get_strategies_to_run(self, strats):
         if strats:
             provided_strategies = strats.split(",")
 
         else:
             provided_strategies = [s.strategy_name() for s in self.all_strategies]
 
-        selected_strategies = {
+        return {
             s.strategy_name(): s
             for s in self.all_strategies
             if s.strategy_name() in provided_strategies
         }
+
+    def _clear_transient_data(self):
+        self.lookup_object("alert_data_store").clear_data()
+        self.lookup_object("order_data_store").clear_data()
+
+    def run_back_test(self, market, str_since, str_to, strats, display_opts):
+        selected_strategies = self._get_strategies_to_run(strats)
+
         if not selected_strategies:
             logging.warning(
-                "Unable to find any matching strategy {}".format(provided_strategies)
+                "Unable to find any matching strategy {}".format(strats)
             )
             return
 
-        self.lookup_object("alert_data_store").clear_data()
-        self.lookup_object("order_data_store").clear_data()
+        self._clear_transient_data()
 
         dt_since = datetime.strptime(str_since, "%Y-%m-%d")
         dt_to = datetime.strptime(str_to, "%Y-%m-%d")
@@ -100,9 +107,10 @@ class StrategyRunner(BaseContainer):
                     market, strategy, dt_since, dt_to
                 )
 
-        self.lookup_object("report_publisher").generate_report(
-            market, dt_since, dt_to, display_opts
-        )
+            # Report summary for this strategy
+            self.lookup_object("report_publisher").generate_report(
+                market, strat_name, dt_since, dt_to, display_opts
+            )
 
     def process_market_strategy(self, market, strategy, ts_start=None):
         alert_message, alert_type = strategy.run(market, ts_start)

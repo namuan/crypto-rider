@@ -14,8 +14,10 @@ class OrderDataStore(BaseContainer):
     def clear_data(self):
         TradeOrder.delete().execute()
 
-    def fetch_data(self):
-        query = TradeOrder.select()
+    def fetch_data(self, strat_name):
+        query = TradeOrder.select().where(
+            TradeOrder.strategy == strat_name
+        )
         return pd.DataFrame(list(query.dicts()))
 
     def fetch_data_with_strategy(self, strategy):

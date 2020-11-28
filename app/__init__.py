@@ -80,6 +80,6 @@ def download_historical_data(market, since):
 @click.option("--to", help="To", required=True)
 @click.option("--strats", help="Strategies to backtest. eg. StrategyA,StrategyB")
 def back_test(market, since, to, strats):
-    display_opts = DotMap({"trades": True, "alerts": False, "plots": False})
+    display_opts = DotMap({"trades": False, "alerts": False, "plots": False})
     strategy_runner = locator.o("strategy_runner")
     strategy_runner.run_back_test(market, since, to, strats, display_opts)
