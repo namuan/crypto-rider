@@ -3,13 +3,17 @@ from datetime import datetime
 
 import mplfinance as mpf
 import numpy as np
+from dotmap import DotMap
 from tabulate import tabulate
 
 from app.config.basecontainer import BaseContainer
 
 
 class ReportPublisher(BaseContainer):
-    def generate_report(self, market, strat_name, dt_since, dt_to, display_options):
+    def generate_report(
+            self, market, strategy, dt_since, dt_to, display_options=DotMap()
+    ):
+        strat_name = strategy.strategy_name()
         alerts_df = self.lookup_object("alert_data_store").fetch_data(strat_name)
         market_data_df = self.lookup_object("market_data_store").fetch_data_between(
             market, dt_since, dt_to
@@ -17,7 +21,9 @@ class ReportPublisher(BaseContainer):
         order_data_df = self.lookup_object("order_data_store").fetch_data(strat_name)
 
         self._print_table(
-            "{} -> {} Summary Report".format(market, strat_name),
+            "\n{} -> {} (Params: {}) Summary Report".format(
+                market, strat_name, strategy.title_suffix()
+            ),
             self._generate_summary(
                 market, dt_since, dt_to, market_data_df, order_data_df
             ),
@@ -99,12 +105,12 @@ class ReportPublisher(BaseContainer):
         winning_trades = len(order_data_df[order_data_df["pnl"] > 0])
         total_profit_loss = order_data_df["pnl"].sum()
         total_profit_loss_pct = (
-            order_data_df["pnl"] / order_data_df["buy_price"]
-        ).sum() * 100
+                                        order_data_df["pnl"] / order_data_df["buy_price"]
+                                ).sum() * 100
         order_data_df["pnl_cumsum"] = order_data_df["pnl"].cumsum()
         order_data_df["highval"] = order_data_df["pnl_cumsum"].cummax()
         order_data_df["drawdown"] = (
-            order_data_df["pnl_cumsum"] - order_data_df["highval"]
+                order_data_df["pnl_cumsum"] - order_data_df["highval"]
         )
         return [
             ["Metric", "Value"],

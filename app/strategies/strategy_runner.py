@@ -65,7 +65,7 @@ class StrategyRunner(BaseContainer):
             if s.strategy_name() in provided_strategies
         }
 
-    def _clear_transient_data(self):
+    def clear_transient_data(self):
         self.lookup_object("alert_data_store").clear_data()
         self.lookup_object("order_data_store").clear_data()
 
@@ -73,12 +73,10 @@ class StrategyRunner(BaseContainer):
         selected_strategies = self._get_strategies_to_run(strats)
 
         if not selected_strategies:
-            logging.warning(
-                "Unable to find any matching strategy {}".format(strats)
-            )
+            logging.warning("Unable to find any matching strategy {}".format(strats))
             return
 
-        self._clear_transient_data()
+        self.clear_transient_data()
 
         dt_since = datetime.strptime(str_since, "%Y-%m-%d")
         dt_to = datetime.strptime(str_to, "%Y-%m-%d")
@@ -109,7 +107,7 @@ class StrategyRunner(BaseContainer):
 
             # Report summary for this strategy
             self.lookup_object("report_publisher").generate_report(
-                market, strat_name, dt_since, dt_to, display_opts
+                market, strategy, dt_since, dt_to, display_opts
             )
 
     def process_market_strategy(self, market, strategy, ts_start=None):

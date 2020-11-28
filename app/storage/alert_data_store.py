@@ -12,9 +12,7 @@ class AlertDataStore(BaseContainer):
         SignalAlert.delete().execute()
 
     def fetch_data(self, strat_name):
-        query = SignalAlert.select().where(
-            SignalAlert.strategy == strat_name
-        )
+        query = SignalAlert.select().where(SignalAlert.strategy == strat_name)
         df = pd.DataFrame(list(query.dicts()))
         if not df.empty:
             df["date"] = pd.to_datetime(df["timestamp"], unit="ns")

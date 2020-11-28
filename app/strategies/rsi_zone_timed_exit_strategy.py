@@ -11,6 +11,12 @@ class RsiZoneTimedExitStrategy(BaseStrategy):
         self.trend_indicator = params.get("trend_indicator") or "close_200_sma"
         self.candles_wait_before_sell = params.get("candles_wait_before_sell") or 1
 
+    def title_suffix(self):
+        return "RSI Limit: {}, Sell after {} days".format(
+            self.rsi_buy_limit,
+            self.candles_wait_before_sell
+        )
+
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
         _ = df[self.rsi_indicator]

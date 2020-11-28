@@ -116,3 +116,6 @@ class BaseStrategy(BaseContainer):
 
     def evaluate_conditions(self, conditions):
         return all(conditions)
+
+    def title_suffix(self):
+        return ""

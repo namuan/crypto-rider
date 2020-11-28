@@ -15,9 +15,7 @@ class OrderDataStore(BaseContainer):
         TradeOrder.delete().execute()
 
     def fetch_data(self, strat_name):
-        query = TradeOrder.select().where(
-            TradeOrder.strategy == strat_name
-        )
+        query = TradeOrder.select().where(TradeOrder.strategy == strat_name)
         return pd.DataFrame(list(query.dicts()))
 
     def fetch_data_with_strategy(self, strategy):
@@ -79,7 +77,7 @@ class OrderDataStore(BaseContainer):
         )
         return (
             TradeOrder.select()
-                .where(TradeOrder.market == market, TradeOrder.strategy == strategy)
-                .order_by(TradeOrder.buy_timestamp.desc())
-                .first()
+            .where(TradeOrder.market == market, TradeOrder.strategy == strategy)
+            .order_by(TradeOrder.buy_timestamp.desc())
+            .first()
         )
