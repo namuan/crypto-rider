@@ -3,7 +3,6 @@ import sched
 from datetime import datetime
 
 import pandas as pd
-from time import time
 
 from app.config import (
     providers_fetch_delay,
@@ -15,7 +14,7 @@ from app.strategies.close_x_ema_strategy import CloseCrossEmaStrategy
 from app.strategies.ema_bb_alligator_strategy import EMABBAlligatorStrategy
 from app.strategies.ma_xo_strategy import MaCrossOverStrategy
 from app.strategies.rsi_zone_strategy import RsiZoneStrategy
-from app.strategies.simple_strategy import SimpleStrategy
+from app.strategies.rsi_zone_timed_exit_strategy import RsiZoneTimedExitStrategy
 from app.strategies.sma_x_trend_strategy import SimpleMovingAverageCrossTrendStrategy
 
 
@@ -33,6 +32,7 @@ class StrategyRunner(BaseContainer):
             SimpleMovingAverageCrossTrendStrategy(locator),
             EMABBAlligatorStrategy(locator),
             BreakoutStrategy(locator),
+            RsiZoneTimedExitStrategy(locator),
         ]
 
     def start(self):
@@ -100,7 +100,9 @@ class StrategyRunner(BaseContainer):
                     market, strategy, dt_since, dt_to
                 )
 
-        self.lookup_object("report_publisher").generate_report(market, dt_since, dt_to, display_opts)
+        self.lookup_object("report_publisher").generate_report(
+            market, dt_since, dt_to, display_opts
+        )
 
     def process_market_strategy(self, market, strategy, ts_start=None):
         alert_message, alert_type = strategy.run(market, ts_start)

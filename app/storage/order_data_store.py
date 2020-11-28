@@ -1,9 +1,8 @@
 import logging
-from threading import Thread
 
 import pandas as pd
 
-from app.config import ALERTS_CHANNEL, ORDERS_CHANNEL
+from app.config import ORDERS_CHANNEL
 from app.config.basecontainer import BaseContainer
 from app.models import TradeOrder
 
@@ -72,11 +71,13 @@ class OrderDataStore(BaseContainer):
 
     def last_trade_order(self, market, strategy) -> TradeOrder:
         logging.info(
-            "Last trade order for market {}, strategy {}".format(market, strategy)
+            "Getting last trade order for market {}, strategy {}".format(
+                market, strategy
+            )
         )
         return (
             TradeOrder.select()
-            .where(TradeOrder.market == market, TradeOrder.strategy == strategy)
-            .order_by(TradeOrder.buy_timestamp.desc())
-            .first()
+                .where(TradeOrder.market == market, TradeOrder.strategy == strategy)
+                .order_by(TradeOrder.buy_timestamp.desc())
+                .first()
         )

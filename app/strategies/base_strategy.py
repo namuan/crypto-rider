@@ -1,29 +1,44 @@
 import logging
-from time import time
 
 from pandas import DataFrame
+from time import time
 
-from app.config import ALERTS_CHANNEL
 from app.config.basecontainer import BaseContainer
 from app.models import SignalAlert
+
+
+class Position:
+    def __init__(self, open_dt, open_candle, close_dt=None, close_candle=None):
+        self.open_dt = open_dt
+        self.close_dt = close_dt
+        self.open_candle = open_candle
+        self.close_candle = close_candle
+
+    def is_open(self):
+        return self.open_dt and not self.close_dt
 
 
 class BaseStrategy(BaseContainer):
     market = None
     ts_at_run = None
     last_candle = None
+    current_position = None
 
     def run(self, market, ts_at_run):
         self.ts_at_run = ts_at_run or int(time() * 1000)
         self.market = market
         alert_message, alert_type = None, None
         df = self.calculate_indicators()
-        if self.evaluate_conditions(self.can_buy(df)):
+        self.last_candle = self.candle(df)
+
+        if not self._has_open_position() and self.evaluate_conditions(self.can_buy(df)):
             message = self.alert_message(df)
             alert_message, alert_type = message, "BUY"
-        elif self.evaluate_conditions(self.can_sell(df)):
+            self._open_position(df)
+        elif self._has_open_position() and self.evaluate_conditions(self.can_sell(df)):
             message = self.alert_message(df)
             alert_message, alert_type = message, "SELL"
+            self._close_position(df)
         else:
             logging.info(
                 "Running {} -> No signal: {}".format(
@@ -31,8 +46,23 @@ class BaseStrategy(BaseContainer):
                 )
             )
 
-        self.last_candle = self.candle(df)
         return alert_message, alert_type
+
+    def _has_open_position(self):
+        return self.current_position and self.current_position.is_open()
+
+    def _open_position(self, df):
+        self.current_position = Position(
+            open_dt=df.index[-1], open_candle=self.candle(df)
+        )
+
+    def _close_position(self, df):
+        if self.current_position:
+            self.current_position.close_dt = df.index[-1]
+            self.current_position.close_candle = self.candle(df)
+
+    def position(self):
+        return self.current_position
 
     def find_last_alert_of(self, market, strategy):
         return (
@@ -72,7 +102,8 @@ class BaseStrategy(BaseContainer):
             self.last_candle["close"],
         )
 
-        self.lookup_object("redis_publisher").publish_data(ALERTS_CHANNEL, data)
+        self.lookup_object("alert_data_store").save_alert(data)
+        self.lookup_object("broker").execute_trade(data)
 
     def candle(self, df: DataFrame, rewind=-1):
         return df.iloc[rewind].to_dict()

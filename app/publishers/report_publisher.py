@@ -24,7 +24,9 @@ class ReportPublisher(BaseContainer):
         )
 
         if display_options.trades:
-            self._print_table("Trades", self._generate_orders_list(market, order_data_df))
+            self._print_table(
+                "Trades", self._generate_orders_list(market, order_data_df)
+            )
 
         if display_options.alerts:
             self._print_table("Alerts", self._generate_alerts_list(market, alerts_df))
@@ -93,22 +95,37 @@ class ReportPublisher(BaseContainer):
             return
 
         order_data_df["pnl"] = order_data_df["sell_price"] - order_data_df["buy_price"]
+        total_trades = len(order_data_df)
+        winning_trades = len(order_data_df[order_data_df["pnl"] > 0])
         total_profit_loss = order_data_df["pnl"].sum()
         total_profit_loss_pct = (
-                                        order_data_df["pnl"] / order_data_df["buy_price"]
-                                ).sum() * 100
+            order_data_df["pnl"] / order_data_df["buy_price"]
+        ).sum() * 100
         order_data_df["pnl_cumsum"] = order_data_df["pnl"].cumsum()
         order_data_df["highval"] = order_data_df["pnl_cumsum"].cummax()
         order_data_df["drawdown"] = (
-                order_data_df["pnl_cumsum"] - order_data_df["highval"]
+            order_data_df["pnl_cumsum"] - order_data_df["highval"]
         )
         return [
             ["Metric", "Value"],
             ["Market", market],
             ["Start at", dt_from],
             ["End at", dt_to],
-            ["Total trades", len(order_data_df)],
-            ["Open at start", open_at_start],
+            ["Total trades", total_trades],
+            [
+                "Win trades (%)",
+                "{} ({:.2f}%)".format(
+                    winning_trades, winning_trades / total_trades * 100
+                ),
+            ],
+            [
+                "Loss trades (%)",
+                "{} ({:.2f}%)".format(
+                    total_trades - winning_trades,
+                    (total_trades - winning_trades) / total_trades * 100,
+                ),
+            ],
+            ["Open at start", "{:.2f}".format(open_at_start)],
             ["Close at end", "{:.2f}".format(close_at_end)],
             [
                 "Total P/L (%)",

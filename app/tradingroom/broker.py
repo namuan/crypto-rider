@@ -1,20 +1,10 @@
 import logging
-from threading import Thread
 
 from app.bank import NotEnoughCashError
-from app.config import ALERTS_CHANNEL
 from app.config.basecontainer import BaseContainer
 
 
-class Broker(Thread, BaseContainer):
-    def __init__(self, locator):
-        Thread.__init__(self)
-        BaseContainer.__init__(self, locator, subscription_channel=ALERTS_CHANNEL)
-        self.daemon = True
-
-    def run(self):
-        for event in self.pull_event():
-            self.execute_trade(event)
+class Broker(BaseContainer):
 
     def execute_trade(self, alert_event):
         trade_order = self._setup_order(alert_event)
@@ -38,9 +28,9 @@ class Broker(Thread, BaseContainer):
             )
             return self.lookup_object("order_data_store").save_new_order(alert_event)
         elif (
-            trade_order
-            and not trade_order.is_open
-            and alert_event.get("alert_type") == "BUY"
+                trade_order
+                and not trade_order.is_open
+                and alert_event.get("alert_type") == "BUY"
         ):
             logging.info(
                 "Existing closed trade found and alert type is BUY. Saving new order: {}".format(
@@ -49,10 +39,10 @@ class Broker(Thread, BaseContainer):
             )
             return self.lookup_object("order_data_store").save_new_order(alert_event)
         elif (
-            trade_order
-            and trade_order.is_open
-            and alert_event.get("alert_type") == "SELL"
-            and self.is_selling_with_same_strategy(trade_order, alert_event)
+                trade_order
+                and trade_order.is_open
+                and alert_event.get("alert_type") == "SELL"
+                and self.is_selling_with_same_strategy(trade_order, alert_event)
         ):
             logging.info(
                 "Existing open trade found and alert type is SELL. Saving new order: {}".format(

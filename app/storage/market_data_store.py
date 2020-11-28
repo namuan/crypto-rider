@@ -54,7 +54,7 @@ class MarketDataStore(Thread, BaseContainer):
         )
         df = pd.DataFrame(list(query.dicts()))
         df["date"] = pd.to_datetime(df["timestamp"], unit="ms")
-        return wrap(df)
+        return wrap(df.iloc[::-1])
 
     def run(self):
         for event in self.pull_event():

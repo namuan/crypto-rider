@@ -1,8 +1,7 @@
 import pandas as pd
-import mplfinance as mpf
+
 from app.common import reshape_data
 from app.strategies.base_strategy import BaseStrategy
-from datetime import timedelta
 
 pd.set_option("display.max_columns", None)
 pd.set_option("display.width", None)
