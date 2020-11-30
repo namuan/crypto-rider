@@ -13,8 +13,7 @@ class RsiZoneTimedExitStrategy(BaseStrategy):
 
     def title_suffix(self):
         return "RSI Limit: {}, Sell after {} days".format(
-            self.rsi_buy_limit,
-            self.candles_wait_before_sell
+            self.rsi_buy_limit, self.candles_wait_before_sell
         )
 
     def calculate_indicators(self):

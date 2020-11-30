@@ -16,9 +16,7 @@ class EMABBAlligatorStrategy(BaseStrategy):
         df = self.load_df(limit=1000)
         _ = df["close_3_ema"]
         _ = df["boll"]
-        ao = ta.momentum.AwesomeOscillatorIndicator(
-            high=df["high"], low=df["low"]
-        )
+        ao = ta.momentum.AwesomeOscillatorIndicator(high=df["high"], low=df["low"])
         df["AO"] = ao.ao()
         return df
 
