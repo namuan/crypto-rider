@@ -41,6 +41,11 @@ class CandleStick(Model):
         event["id"] = uuid_gen()
         CandleStick.insert(event).on_conflict_ignore().execute()
 
+    @staticmethod
+    def save_multiple(events):
+        with db.atomic():
+            CandleStick.insert_many(events).execute()
+
 
 class SignalAlert(Model):
     id = UUIDField(primary_key=True)

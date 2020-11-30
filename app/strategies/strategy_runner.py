@@ -10,6 +10,7 @@ from app.config import (
 )
 from app.config.basecontainer import BaseContainer
 from app.strategies.breakout_strategy import BreakoutStrategy
+from app.strategies.cdl_3bc_doji_timed_exit_strategy import CandleThreeBlackCrowsDojiTimedExitStrategy
 from app.strategies.close_x_ema_strategy import CloseCrossEmaStrategy
 from app.strategies.ema_bb_alligator_strategy import EMABBAlligatorStrategy
 from app.strategies.ma_xo_strategy import MaCrossOverStrategy
@@ -33,6 +34,7 @@ class StrategyRunner(BaseContainer):
             EMABBAlligatorStrategy(locator),
             BreakoutStrategy(locator),
             RsiZoneTimedExitStrategy(locator),
+            CandleThreeBlackCrowsDojiTimedExitStrategy(locator)
         ]
 
     def start(self):

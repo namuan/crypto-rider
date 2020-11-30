@@ -14,14 +14,13 @@ class EMABBAlligatorStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="4h")
-        _ = reshaped_df["close_3_ema"]
-        _ = reshaped_df["boll"]
+        _ = df["close_3_ema"]
+        _ = df["boll"]
         ao = ta.momentum.AwesomeOscillatorIndicator(
-            high=reshaped_df["high"], low=reshaped_df["low"]
+            high=df["high"], low=df["low"]
         )
-        reshaped_df["AO"] = ao.ao()
-        return reshaped_df
+        df["AO"] = ao.ao()
+        return df
 
     def can_sell(self, df):
         prev_candle = self.candle(df)

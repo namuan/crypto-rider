@@ -9,11 +9,10 @@ class CloseCrossEmaStrategy(BaseStrategy):
     long_indicator = "close_{}_ema".format(long_ema)
 
     def calculate_indicators(self):
-        df = self.load_df(limit=1000)  # 6H * 300
-        reshaped_df = reshape_data(df, timedelta="4h")
-        _ = reshaped_df[self.short_indicator]
-        _ = reshaped_df[self.long_indicator]
-        return reshaped_df
+        df = self.load_df(limit=1000)
+        _ = df[self.short_indicator]
+        _ = df[self.long_indicator]
+        return df
 
     def can_sell(self, df):
         prev_candle = self.candle(df)

@@ -10,8 +10,7 @@ class SimpleStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="1d")
-        return reshaped_df
+        return df
 
     def can_sell(self, df):
         candle = self.candle(df)

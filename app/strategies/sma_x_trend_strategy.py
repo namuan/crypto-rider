@@ -15,9 +15,8 @@ class SimpleMovingAverageCrossTrendStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="1d")
-        _ = reshaped_df[self.trend_ma_indicator]
-        return reshaped_df
+        _ = df[self.trend_ma_indicator]
+        return df
 
     def can_buy(self, df):
         prev_candle = self.candle(df)

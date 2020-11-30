@@ -13,10 +13,9 @@ class RsiZoneStrategy(BaseStrategy):
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta="1d")
-        _ = reshaped_df[self.rsi_indicator]
-        _ = reshaped_df[self.trend_indicator]
-        return reshaped_df
+        _ = df[self.rsi_indicator]
+        _ = df[self.trend_indicator]
+        return df
 
     def can_buy(self, df):
         candle = self.candle(df)

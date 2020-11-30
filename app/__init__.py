@@ -32,9 +32,6 @@ def data_provider(skip_wait):
 
 @cli.command()
 def strategy_runner():
-    alert_data_store = locator.o("alert_data_store")
-    alert_data_store.start()
-
     # Start notifiers
     telegram_notifier = locator.o("telegram_notifier")
     telegram_notifier.start()

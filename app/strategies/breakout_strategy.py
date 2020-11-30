@@ -10,17 +10,13 @@ class BreakoutStrategy(BaseStrategy):
         self.higher_high = "close_{}_max".format(self.max_range)
         self.ma_indicator = "close_{}_sma".format(self.ma_range)
         self.trend_indicator = params.get("trend_indicator") or "close_200_sma"
-        self.timeframe = params.get("timeframe") or "1h"
 
     def calculate_indicators(self):
         df = self.load_df(limit=1000)
-        reshaped_df = reshape_data(df, timedelta=self.timeframe)
-        reshaped_df[self.higher_high] = (
-            reshaped_df["close"].shift().rolling(self.max_range).max()
-        )
-        _ = reshaped_df[self.ma_indicator]
-        _ = reshaped_df[self.trend_indicator]
-        return reshaped_df
+        df[self.higher_high] = df["close"].shift().rolling(self.max_range).max()
+        _ = df[self.ma_indicator]
+        _ = df[self.trend_indicator]
+        return df
 
     def can_buy(self, df):
         candle = self.candle(df)
